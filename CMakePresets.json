@@ -13,6 +13,19 @@
       }
     },
     {
+      "name": "clang-tidy",
+      "displayName": "Clang-tidy (host)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/clang-tidy",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ENABLE_HARDWARE": "OFF",
+        "BUILD_TESTING": "ON",
+        "ENABLE_CLANG_TIDY": "ON",
+        "CMAKE_CXX_COMPILER": "clang++"
+      }
+    },
+    {
       "name": "release",
       "displayName": "Release (host)",
       "generator": "Ninja",
@@ -24,10 +37,10 @@
       }
     },
     {
-      "name": "pi-debug",
+      "name": "arm-debug",
       "displayName": "Pi Debug (aarch64)",
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/pi-debug",
+      "binaryDir": "${sourceDir}/build/arm-debug",
       "toolchainFile": "${sourceDir}/cmake/toolchains/raspberrypi-aarch64.cmake",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
@@ -36,10 +49,10 @@
       }
     },
     {
-      "name": "pi-release",
+      "name": "arm-release",
       "displayName": "Pi Release (aarch64)",
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/pi-release",
+      "binaryDir": "${sourceDir}/build/arm-release",
       "toolchainFile": "${sourceDir}/cmake/toolchains/raspberrypi-aarch64.cmake",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
@@ -49,10 +62,11 @@
     }
   ],
   "buildPresets": [
-    { "name": "debug",      "configurePreset": "debug" },
-    { "name": "release",    "configurePreset": "release" },
-    { "name": "pi-debug",   "configurePreset": "pi-debug" },
-    { "name": "pi-release", "configurePreset": "pi-release" }
+    { "name": "debug",       "configurePreset": "debug" },
+    { "name": "clang-tidy",  "configurePreset": "clang-tidy" },
+    { "name": "release",     "configurePreset": "release" },
+    { "name": "arm-debug",    "configurePreset": "arm-debug" },
+    { "name": "arm-release",  "configurePreset": "arm-release" }
   ],
   "testPresets": [
     {
@@ -64,6 +78,44 @@
       "name": "release",
       "configurePreset": "release",
       "output": { "outputOnFailure": true }
+    }
+  ],
+
+  "packagePresets": [
+    {
+      "name": "arm-release",
+      "displayName": "Pi Release (TGZ + DEB)",
+      "configurePreset": "arm-release",
+      "generators": ["TGZ", "DEB"]
+    }
+  ],
+
+  "workflowPresets": [
+    {
+      "name": "build-and-test",
+      "displayName": "Build and test",
+      "steps": [
+        { "type": "configure", "name": "debug" },
+        { "type": "build",     "name": "debug" },
+        { "type": "test",      "name": "debug" }
+      ]
+    },
+    {
+      "name": "tidy",
+      "displayName": "Tidy — clang-tidy check",
+      "steps": [
+        { "type": "configure", "name": "clang-tidy" },
+        { "type": "build",     "name": "clang-tidy" }
+      ]
+    },
+    {
+      "name": "ship",
+      "displayName": "Ship — Pi release package",
+      "steps": [
+        { "type": "configure", "name": "arm-release" },
+        { "type": "build",     "name": "arm-release" },
+        { "type": "package",   "name": "arm-release" }
+      ]
     }
   ]
 }

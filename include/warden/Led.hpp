@@ -10,12 +10,12 @@ namespace warden {
 /// concerns — any color can in principle blink or be steady.
 class Led {
 public:
-    virtual ~Led() = default;
+  virtual ~Led() = default;
 
-    virtual void setMode(LedColor color, bool blink = false) = 0;
+  virtual void setMode(LedColor color, bool blink = false) = 0;
 
-    /// Turn the LED off unconditionally (used on shutdown).
-    virtual void setOff() = 0;
+  /// Turn the LED off unconditionally (used on shutdown).
+  virtual void setOff() = 0;
 };
 
 } // namespace warden
