@@ -1,0 +1,69 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "debug",
+      "displayName": "Debug (host)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ENABLE_HARDWARE": "OFF",
+        "BUILD_TESTING": "ON"
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "Release (host)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "ENABLE_HARDWARE": "OFF",
+        "BUILD_TESTING": "ON"
+      }
+    },
+    {
+      "name": "pi-debug",
+      "displayName": "Pi Debug (aarch64)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/pi-debug",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/raspberrypi-aarch64.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ENABLE_HARDWARE": "ON",
+        "BUILD_TESTING": "OFF"
+      }
+    },
+    {
+      "name": "pi-release",
+      "displayName": "Pi Release (aarch64)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/pi-release",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/raspberrypi-aarch64.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "ENABLE_HARDWARE": "ON",
+        "BUILD_TESTING": "OFF"
+      }
+    }
+  ],
+  "buildPresets": [
+    { "name": "debug",      "configurePreset": "debug" },
+    { "name": "release",    "configurePreset": "release" },
+    { "name": "pi-debug",   "configurePreset": "pi-debug" },
+    { "name": "pi-release", "configurePreset": "pi-release" }
+  ],
+  "testPresets": [
+    {
+      "name": "debug",
+      "configurePreset": "debug",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "release",
+      "configurePreset": "release",
+      "output": { "outputOnFailure": true }
+    }
+  ]
+}

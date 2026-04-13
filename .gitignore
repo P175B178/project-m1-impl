@@ -1,0 +1,25 @@
+build/
+.env
+
+# VS Code local settings
+.vscode/settings.json.user
+CMakeUserPresets.json
+
+### C++ ###
+*.d
+*.slo *.lo *.o *.obj
+*.gch *.pch
+*.ilk *.pdb
+*.so *.dylib *.dll
+*.mod *.smod
+*.lai *.la *.a *.lib
+*.exe *.out *.app
+*.dwo
+
+### macOS ###
+.DS_Store
+._*
+
+### Windows ###
+Thumbs.db
+[Dd]esktop.ini

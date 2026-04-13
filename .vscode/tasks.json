@@ -1,0 +1,95 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    // ── Local (host x86_64) ──────────────────────────────────────────────────
+    {
+      "label": "Local: Build (Debug)",
+      "type": "shell",
+      "command": "cmake --preset debug && cmake --build --preset debug",
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Local: Build (Release)",
+      "type": "shell",
+      "command": "cmake --preset release && cmake --build --preset release",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Local: Run tests (Debug)",
+      "type": "shell",
+      "command": "ctest --preset debug",
+      "dependsOn": "Local: Build (Debug)",
+      "problemMatcher": []
+    },
+    {
+      "label": "Local: Run tests (Release)",
+      "type": "shell",
+      "command": "ctest --preset release",
+      "dependsOn": "Local: Build (Release)",
+      "problemMatcher": []
+    },
+    // ── ARM (Raspberry Pi via SSH) ───────────────────────────────────────────
+    {
+      "label": "ARM: Build (Debug)",
+      "type": "shell",
+      "command": "cmake --preset pi-debug && cmake --build --preset pi-debug",
+      "group": "build",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "ARM: Build (Release)",
+      "type": "shell",
+      "command": "cmake --preset pi-release && cmake --build --preset pi-release",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "ARM: Deploy app (Debug)",
+      "type": "shell",
+      "command": "tools/deploy.sh",
+      "dependsOn": "ARM: Build (Debug)",
+      "problemMatcher": []
+    },
+    {
+      "label": "ARM: Run app (Debug)",
+      "type": "shell",
+      "command": "tools/run.sh",
+      "dependsOn": "ARM: Deploy app (Debug)",
+      "problemMatcher": []
+    },
+    {
+      "label": "ARM: SSH shell",
+      "type": "shell",
+      "command": "tools/connect.sh",
+      "problemMatcher": []
+    },
+    {
+      "label": "ARM: Start debug server",
+      "type": "shell",
+      "command": "tools/pi/debug.sh",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "arm-debug-server",
+        "pattern": { "regexp": "^$" },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "==> Checking if debug port",
+          "endsPattern": "Leave this terminal open\\."
+        }
+      }
+    },
+    // ── Pi Setup (one-time) ──────────────────────────────────────────────────
+    {
+      "label": "Pi: Setup SSH key",
+      "type": "shell",
+      "command": "tools/setup-ssh.sh",
+      "problemMatcher": []
+    },
+    {
+      "label": "Pi: Bootstrap",
+      "type": "shell",
+      "command": "tools/pi/bootstrap.sh",
+      "problemMatcher": []
+    }
+  ]
+}
