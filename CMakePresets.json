@@ -86,7 +86,8 @@
       "name": "arm-release",
       "displayName": "Pi Release (TGZ + DEB)",
       "configurePreset": "arm-release",
-      "generators": ["TGZ", "DEB"]
+      "generators": ["TGZ", "DEB"],
+      "packageDirectory": "${sourceDir}/package"
     }
   ],
 
@@ -109,8 +110,8 @@
       ]
     },
     {
-      "name": "ship",
-      "displayName": "Ship — Pi release package",
+      "name": "package",
+      "displayName": "Package — Pi release (.deb + .tar.gz)",
       "steps": [
         { "type": "configure", "name": "arm-release" },
         { "type": "build",     "name": "arm-release" },

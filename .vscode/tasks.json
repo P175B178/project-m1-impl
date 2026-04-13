@@ -101,9 +101,9 @@
       "problemMatcher": ["$gcc"]
     },
     {
-      "label": "Workflow: Ship",
+      "label": "Workflow: Package",
       "type": "shell",
-      "command": "cmake --workflow --preset ship",
+      "command": "cmake --workflow --preset package",
       "problemMatcher": ["$gcc"]
     },
     // ── Utilities ────────────────────────────────────────────────────────────

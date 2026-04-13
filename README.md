@@ -125,17 +125,17 @@ Requires the debug binary to already be deployed.
 
 ---
 
-## Shipping a release
+## Packaging a release
 
 Builds an optimised Pi binary and packages it as `.deb` and `.tar.gz`:
 
-**VS Code task:** `Workflow: Ship`
+**VS Code task:** `Workflow: Package`
 
 ```bash
-cmake --workflow --preset ship
+cmake --workflow --preset package
 ```
 
-The `.deb` package is written to `build/arm-release/`. Install it on the Pi:
+The packages are written to `package/`. Install the `.deb` on the Pi:
 
 ```bash
 sudo apt install ./warden-1.0.0-arm64.deb
