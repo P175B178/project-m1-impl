@@ -1,70 +1,39 @@
 {
   "version": "2.0.0",
   "tasks": [
-    // ── Local (host x86_64) ──────────────────────────────────────────────────
+    // ── ARM: cross-compile ───────────────────────────────────────────────────
     {
-      "label": "Local: Build (Debug)",
-      "type": "shell",
-      "command": "cmake --preset debug && cmake --build --preset debug",
-      "group": { "kind": "build", "isDefault": true },
-      "problemMatcher": ["$gcc"]
-    },
-    {
-      "label": "Local: Build (Release)",
-      "type": "shell",
-      "command": "cmake --preset release && cmake --build --preset release",
-      "problemMatcher": ["$gcc"]
-    },
-    {
-      "label": "Local: Run tests (Debug)",
-      "type": "shell",
-      "command": "ctest --preset debug",
-      "dependsOn": "Local: Build (Debug)",
-      "problemMatcher": []
-    },
-    {
-      "label": "Local: Run tests (Release)",
-      "type": "shell",
-      "command": "ctest --preset release",
-      "dependsOn": "Local: Build (Release)",
-      "problemMatcher": []
-    },
-    // ── ARM (Raspberry Pi via SSH) ───────────────────────────────────────────
-    {
-      "label": "ARM: Build (Debug)",
+      "label": "ARM: Build",
       "type": "shell",
       "command": "cmake --preset pi-debug && cmake --build --preset pi-debug",
-      "group": "build",
+      "group": { "kind": "build", "isDefault": true },
       "problemMatcher": ["$gcc"]
     },
     {
       "label": "ARM: Build (Release)",
       "type": "shell",
       "command": "cmake --preset pi-release && cmake --build --preset pi-release",
+      "group": "build",
       "problemMatcher": ["$gcc"]
     },
     {
-      "label": "ARM: Deploy app (Debug)",
+      "label": "ARM: Deploy",
       "type": "shell",
       "command": "tools/deploy.sh",
-      "dependsOn": "ARM: Build (Debug)",
       "problemMatcher": []
     },
     {
-      "label": "ARM: Run app (Debug)",
+      "label": "ARM: Run",
       "type": "shell",
       "command": "tools/run.sh",
-      "dependsOn": "ARM: Deploy app (Debug)",
+      "dependsOn": ["ARM: Build", "ARM: Deploy"],
+      "dependsOrder": "sequence",
       "problemMatcher": []
     },
+    // ── Pi: physical device only ─────────────────────────────────────────────
     {
-      "label": "ARM: SSH shell",
-      "type": "shell",
-      "command": "tools/connect.sh",
-      "problemMatcher": []
-    },
-    {
-      "label": "ARM: Start debug server",
+      // Internal — launched automatically by F5 via launch.json preLaunchTask
+      "label": "Pi: Start gdbserver",
       "type": "shell",
       "command": "tools/pi/debug.sh",
       "isBackground": true,
@@ -78,14 +47,13 @@
         }
       }
     },
-    // ── Utilities ───────────────────────────────────────────────────────────
     {
-      "label": "Local: Format all sources",
+      "label": "Pi: SSH",
       "type": "shell",
-      "command": "cmake --build --preset debug --target format",
+      "command": "tools/connect.sh",
       "problemMatcher": []
     },
-    // ── Pi Setup (one-time) ──────────────────────────────────────────────────
+    // ── Pi: setup (one-time) ─────────────────────────────────────────────────
     {
       "label": "Pi: Setup SSH key",
       "type": "shell",
@@ -96,6 +64,59 @@
       "label": "Pi: Bootstrap",
       "type": "shell",
       "command": "tools/pi/bootstrap.sh",
+      "problemMatcher": []
+    },
+    // ── Local: host build and tests ──────────────────────────────────────────
+    {
+      "label": "Local: Build",
+      "type": "shell",
+      "command": "cmake --preset debug && cmake --build --preset debug",
+      "group": "build",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Local: Run tests",
+      "type": "shell",
+      "command": "ctest --preset debug",
+      "dependsOn": "Local: Build",
+      "problemMatcher": []
+    },
+    // ── Workflows ────────────────────────────────────────────────────────────
+    {
+      "label": "Workflow: Verify",
+      "type": "shell",
+      "command": "cmake --workflow --preset build-and-test && cmake --workflow --preset tidy",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Workflow: Build and test",
+      "type": "shell",
+      "command": "cmake --workflow --preset build-and-test",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Workflow: Tidy",
+      "type": "shell",
+      "command": "cmake --workflow --preset tidy",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Workflow: Ship",
+      "type": "shell",
+      "command": "cmake --workflow --preset ship",
+      "problemMatcher": ["$gcc"]
+    },
+    // ── Utilities ────────────────────────────────────────────────────────────
+    {
+      "label": "Format all sources",
+      "type": "shell",
+      "command": "cmake --preset pi-debug && cmake --build --preset pi-debug --target format",
+      "problemMatcher": []
+    },
+    {
+      "label": "Clean all build directories",
+      "type": "shell",
+      "command": "rm -rf build",
       "problemMatcher": []
     }
   ]

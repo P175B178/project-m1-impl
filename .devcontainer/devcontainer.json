@@ -7,40 +7,26 @@
 
   "customizations": {
     "vscode": {
+      // Extensions to auto-install inside the container.
+      // VS Code settings live in .vscode/settings.json instead.
       "extensions": [
         "ms-vscode.cpptools",
         "ms-vscode.cmake-tools",
-        "twxs.cmake",
-        "eamodio.gitlens",
-        "bierner.markdown-mermaid"
-      ],
-      "settings": {
-        "cmake.generator": "Ninja",
-        "cmake.configureOnOpen": true,
-        "cmake.buildDirectory": "${workspaceFolder}/build/debug",
-        "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-        "editor.formatOnSave": true,
-        "editor.defaultFormatter": "ms-vscode.cpptools",
-        "terminal.integrated.automationProfile.linux": {
-          "path": "/bin/bash",
-          "args": ["-l"]
-        }
-      }
+        "twxs.cmake"
+      ]
     }
   },
 
- // Creates .env from the sample if the developer hasn't set one up yet,
+  // Creates .env from the sample if the developer hasn't set one up yet,
   // before the container starts (runs on the local machine).
-  // Pre-downloads FetchContent deps and generates compile_commands.json so
-  // IntelliSense is ready immediately after the container starts.
-  "postCreateCommand": "cmake --preset debug",
-
   "initializeCommand": "sh .devcontainer/init.sh || .devcontainer\\init.bat || exit 0",
+
+  "postCreateCommand": "git config core.hooksPath hooks",
 
   // Injects .env into the container environment so VS Code server, terminals,
   // tasks, and launch.json ${env:} variables all see the same values.
   "runArgs": ["--env-file", "${localWorkspaceFolder}/.env"],
-  
+
   "mounts": [
     "source=warden-m1-gh,target=/root/.config/gh,type=volume",
     "source=warden-m1-ssh,target=/root/.ssh,type=volume"

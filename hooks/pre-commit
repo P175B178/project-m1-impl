@@ -1,0 +1,15 @@
+#!/bin/bash
+# Runs before every commit. Skip with: git commit --no-verify
+set -euo pipefail
+
+echo "pre-commit: checking formatting..."
+
+if ! find include src \( -name '*.cpp' -o -name '*.hpp' \) \
+     | xargs clang-format --dry-run --Werror 2>&1; then
+    echo ""
+    echo "Formatting errors found. Run the 'Format all sources' task"
+    echo "or: cmake --build --preset pi-debug --target format"
+    exit 1
+fi
+
+echo "pre-commit: OK"

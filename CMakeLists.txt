@@ -9,11 +9,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 option(ENABLE_HARDWARE "Build hardware drivers (requires libgpiod, only for Raspberry Pi)" OFF)
 option(ENABLE_CLANG_TIDY "Run clang-tidy on every translation unit during build" OFF)
 
-if(ENABLE_CLANG_TIDY)
-    find_program(CLANG_TIDY_EXE clang-tidy REQUIRED)
-    set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY_EXE})
-endif()
-
 # ── Dependencies ──────────────────────────────────────────────────────────────
 include(FetchContent)
 set(FETCHCONTENT_UPDATES_DISCONNECTED ON)  # skip re-fetching once downloaded
@@ -44,12 +39,16 @@ if(BUILD_TESTING)
     FetchContent_MakeAvailable(Catch2)
 endif()
 
+# ── clang-tidy (set after FetchContent so it only applies to project targets) ─
+if(ENABLE_CLANG_TIDY)
+    find_program(CLANG_TIDY_EXE clang-tidy REQUIRED)
+    set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY_EXE})
+endif()
+
 # ── Core library (no hardware deps, testable on host) ────────────────────────
-add_library(warden_core
-    src/StateMachine.cpp
-    src/ConfigLoader.cpp
-    src/WardenApp.cpp
-)
+file(GLOB_RECURSE CORE_SOURCES CONFIGURE_DEPENDS src/core/*.cpp)
+
+add_library(warden_core ${CORE_SOURCES})
 target_include_directories(warden_core PUBLIC include)
 target_link_libraries(warden_core PUBLIC spdlog::spdlog tomlplusplus::tomlplusplus)
 
@@ -58,13 +57,8 @@ if(ENABLE_HARDWARE)
     find_library(GPIOD_LIB  gpiod  REQUIRED)
     find_path(GPIOD_INCLUDE gpiod.h REQUIRED)
 
-    add_library(warden_hardware
-        src/hardware/led/SysfsLed.cpp
-        src/hardware/led/StatusLed.cpp
-        src/hardware/sensor/Dht22Sensor.cpp
-        src/hardware/buzzer/GpioPin.cpp
-        src/hardware/buzzer/GpioBuzzer.cpp
-    )
+    file(GLOB_RECURSE HARDWARE_SOURCES CONFIGURE_DEPENDS src/hardware/*.cpp)
+    add_library(warden_hardware ${HARDWARE_SOURCES})
     target_include_directories(warden_hardware PUBLIC include src/hardware ${GPIOD_INCLUDE})
     target_link_libraries(warden_hardware PUBLIC warden_core ${GPIOD_LIB})
 endif()
@@ -80,11 +74,34 @@ else()
     target_compile_definitions(warden PRIVATE HARDWARE_DISABLED)
 endif()
 
+# ── Install rules ─────────────────────────────────────────────────────────────
+install(TARGETS warden RUNTIME DESTINATION bin)
+install(FILES config/config.cfg DESTINATION etc/warden)
+
+# ── Packaging (CPack) ─────────────────────────────────────────────────────────
+set(CPACK_PACKAGE_NAME            "warden")
+set(CPACK_PACKAGE_VERSION         ${PROJECT_VERSION})
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Environmental monitor for Raspberry Pi")
+set(CPACK_GENERATOR               "TGZ")
+
+if(ENABLE_HARDWARE)
+    # DEB package for Raspberry Pi OS (Debian-based)
+    list(APPEND CPACK_GENERATOR "DEB")
+    set(CPACK_DEBIAN_PACKAGE_MAINTAINER   "warden")
+    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "arm64")
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS      "libgpiod2")
+    set(CPACK_DEBIAN_PACKAGE_DESCRIPTION
+        "Monitors temperature and humidity via DHT22 on a Raspberry Pi.\n Signals state through built-in LEDs and a buzzer.")
+endif()
+
+include(CPack)
+
 # ── Format target ────────────────────────────────────────────────────────────
 find_program(CLANG_FORMAT_EXE clang-format)
 if(CLANG_FORMAT_EXE)
     file(GLOB_RECURSE ALL_SOURCE_FILES
         "${CMAKE_SOURCE_DIR}/include/*.hpp"
+        "${CMAKE_SOURCE_DIR}/src/*.hpp"
         "${CMAKE_SOURCE_DIR}/src/*.cpp"
     )
     add_custom_target(format

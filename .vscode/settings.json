@@ -1,6 +1,22 @@
 {
+  // CMake
   "cmake.generator": "Ninja",
   "cmake.configureOnOpen": true,
-  "cmake.configurePreset": "debug",
-  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
+  "cmake.configurePreset": "pi-debug",
+
+  // C/C++ IntelliSense — driven by CMake Tools
+  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+
+  // clang-tidy inline errors (uses compile_commands.json from the active CMake preset)
+  "C_Cpp.codeAnalysis.clangTidy.enabled": true,
+
+  // clang-format on save
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "ms-vscode.cpptools",
+
+  // Terminal
+  "terminal.integrated.automationProfile.linux": {
+    "path": "/bin/bash",
+    "args": ["-l"]
+  }
 }

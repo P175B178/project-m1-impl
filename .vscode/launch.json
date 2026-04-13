@@ -15,7 +15,7 @@
       "miDebuggerPath": "/usr/bin/gdb-multiarch",
       "miDebuggerServerAddress": "${env:PI_HOST}:2345",
       "targetArchitecture": "arm64",
-      "preLaunchTask": "ARM: Start debug server",
+      "preLaunchTask": "Pi: Start gdbserver",  // see tasks.json
       "setupCommands": [
         {
           "description": "Enable pretty-printing",

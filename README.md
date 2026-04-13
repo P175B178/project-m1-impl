@@ -37,17 +37,11 @@ Open the project folder in VS Code, then when prompted click **Reopen in Contain
 
 ## Build
 
-Two build targets exist: **host** (x86\_64, hardware disabled, for running tests) and **Pi** (aarch64 cross-compiled, hardware enabled).
+The default build target is the Pi (aarch64 cross-compiled, hardware enabled).
 
-**VS Code task:** `Local: Build (Debug)` (or `Ctrl+Shift+B` — runs the default build task directly)
-
-**VS Code task:** `ARM: Build (Debug)` / `ARM: Build (Release)` — cross-compile for Pi
+**VS Code task:** `ARM: Build` (`Ctrl+Shift+B`)
 
 ```bash
-# Host build
-cmake --preset debug && cmake --build --preset debug
-
-# Pi cross-compile
 cmake --preset pi-debug && cmake --build --preset pi-debug
 ```
 
@@ -55,12 +49,13 @@ cmake --preset pi-debug && cmake --build --preset pi-debug
 
 ## Tests
 
-Tests run on the host — no Pi required. Hardware drivers are excluded from the host build.
+Tests run on the host — no Pi required. Hardware drivers are replaced by mocks.
 
-**VS Code task:** `Local: Run tests (Debug)` — builds and runs in one step
+**VS Code task:** `Local: Run tests`
 
 ```bash
-ctest --preset debug  # requires a prior host debug build
+cmake --preset debug && cmake --build --preset debug
+ctest --preset debug
 ```
 
 ---
@@ -105,41 +100,87 @@ cat /sys/bus/iio/devices/iio:device0/in_temp_input
 
 ### Deploy and run
 
-**VS Code task:** `ARM: Run app (Debug)` — chains build → deploy → run automatically
+**VS Code task:** `ARM: Run` — builds, deploys, and runs in one step
 
 ```bash
 tools/deploy.sh
 tools/run.sh  # streams output to this terminal, Ctrl+C to stop
 ```
 
+To deploy without rebuilding (e.g. after `Ctrl+Shift+B`):
+
+**VS Code task:** `ARM: Deploy`
+
+```bash
+tools/deploy.sh
+```
+
 ---
 
 ## Remote debugging
 
-Requires the debug binary to already be deployed — run the deploy step first.
+Requires the debug binary to already be deployed.
 
-**VS Code:** press `F5` — **Remote ARM Debug** is the default launch configuration. VS Code starts `gdbserver` on the Pi automatically and connects. Breakpoints, step-through, and variable inspection all work normally.
+**VS Code launch config:** `Remote ARM Debug` (`F5`) — connects to gdbserver on the Pi automatically. Breakpoints, step-through, and variable inspection all work normally.
+
+---
+
+## Shipping a release
+
+Builds an optimised Pi binary and packages it as `.deb` and `.tar.gz`:
+
+**VS Code task:** `Workflow: Ship`
+
+```bash
+cmake --workflow --preset ship
+```
+
+The `.deb` package is written to `build/pi-release/`. Install it on the Pi:
+
+```bash
+sudo apt install ./warden-1.0.0-arm64.deb
+```
 
 ---
 
 ## Utilities
 
-**Format all source files** (`include/` and `src/`) according to `.clang-format`:
+**Before committing** — run the full test suite and static analysis to match what CI checks:
 
-**VS Code task:** `Local: Format all sources`
+**VS Code task:** `Workflow: Verify`
 
 ```bash
-cmake --build --preset debug --target format
+cmake --workflow --preset build-and-test && cmake --workflow --preset tidy
 ```
 
 > [!TIP]
-> Files are also formatted automatically on save (`Ctrl+S`) inside the dev container.
+> Formatting is also checked automatically on every commit via a git pre-commit hook.
+
+---
+
+**Format all source files** according to `.clang-format`:
+
+**VS Code task:** `Format all sources` (`Ctrl+S` formats the current file on save)
+
+```bash
+cmake --preset pi-debug && cmake --build --preset pi-debug --target format
+```
+
+---
+
+**Clean all build directories** — useful when builds get into a broken state:
+
+**VS Code task:** `Clean all build directories`
+
+```bash
+rm -rf build
+```
 
 ---
 
 **SSH shell into the Pi:**
 
-**VS Code task:** `ARM: SSH shell`
+**VS Code task:** `Pi: SSH`
 
 ```bash
 tools/connect.sh
