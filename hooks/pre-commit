@@ -4,11 +4,16 @@ set -euo pipefail
 
 echo "pre-commit: checking formatting..."
 
+if ! command -v clang-format &>/dev/null; then
+    echo "pre-commit: clang-format not found, skipping format check"
+    exit 0
+fi
+
 if ! find include src \( -name '*.cpp' -o -name '*.hpp' \) \
      | xargs clang-format --dry-run --Werror 2>&1; then
     echo ""
     echo "Formatting errors found. Run the 'Format all sources' task"
-    echo "or: cmake --build --preset pi-debug --target format"
+    echo "or: cmake --preset pi-debug && cmake --build --preset pi-debug --target format"
     exit 1
 fi
 
