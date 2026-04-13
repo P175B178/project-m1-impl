@@ -37,10 +37,10 @@
       }
     },
     {
-      "name": "pi-debug",
+      "name": "arm-debug",
       "displayName": "Pi Debug (aarch64)",
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/pi-debug",
+      "binaryDir": "${sourceDir}/build/arm-debug",
       "toolchainFile": "${sourceDir}/cmake/toolchains/raspberrypi-aarch64.cmake",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
@@ -49,10 +49,10 @@
       }
     },
     {
-      "name": "pi-release",
+      "name": "arm-release",
       "displayName": "Pi Release (aarch64)",
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/pi-release",
+      "binaryDir": "${sourceDir}/build/arm-release",
       "toolchainFile": "${sourceDir}/cmake/toolchains/raspberrypi-aarch64.cmake",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
@@ -65,8 +65,8 @@
     { "name": "debug",       "configurePreset": "debug" },
     { "name": "clang-tidy",  "configurePreset": "clang-tidy" },
     { "name": "release",     "configurePreset": "release" },
-    { "name": "pi-debug",    "configurePreset": "pi-debug" },
-    { "name": "pi-release",  "configurePreset": "pi-release" }
+    { "name": "arm-debug",    "configurePreset": "arm-debug" },
+    { "name": "arm-release",  "configurePreset": "arm-release" }
   ],
   "testPresets": [
     {
@@ -83,9 +83,9 @@
 
   "packagePresets": [
     {
-      "name": "pi-release",
+      "name": "arm-release",
       "displayName": "Pi Release (TGZ + DEB)",
-      "configurePreset": "pi-release",
+      "configurePreset": "arm-release",
       "generators": ["TGZ", "DEB"]
     }
   ],
@@ -112,9 +112,9 @@
       "name": "ship",
       "displayName": "Ship — Pi release package",
       "steps": [
-        { "type": "configure", "name": "pi-release" },
-        { "type": "build",     "name": "pi-release" },
-        { "type": "package",   "name": "pi-release" }
+        { "type": "configure", "name": "arm-release" },
+        { "type": "build",     "name": "arm-release" },
+        { "type": "package",   "name": "arm-release" }
       ]
     }
   ]

@@ -6,18 +6,18 @@ set -euo pipefail
 #
 # Usage:
 #   tools/test.sh
-#   tools/test.sh build/pi-release/tests/warden_tests
+#   tools/test.sh build/arm-release/tests/warden_tests
 
 : "${PI_USER:?PI_USER not set — copy .env.sample to .env and configure it.}"
 : "${PI_HOST:?PI_HOST not set — copy .env.sample to .env and configure it.}"
 
 PORT="${PI_PORT:-22}"
 PI="${PI_USER}@${PI_HOST}"
-LOCAL_TEST_BIN="${1:-build/pi-debug/tests/warden_tests}"
+LOCAL_TEST_BIN="${1:-build/arm-debug/tests/warden_tests}"
 
 if [[ ! -f "${LOCAL_TEST_BIN}" ]]; then
   echo "Test binary not found: ${LOCAL_TEST_BIN}" >&2
-  echo "Build first: cmake --preset pi-debug && cmake --build --preset pi-debug" >&2
+  echo "Build first: cmake --preset arm-debug && cmake --build --preset arm-debug" >&2
   exit 2
 fi
 

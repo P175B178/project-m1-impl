@@ -42,7 +42,7 @@ The default build target is the Pi (aarch64 cross-compiled, hardware enabled).
 **VS Code task:** `ARM: Build` (`Ctrl+Shift+B`)
 
 ```bash
-cmake --preset pi-debug && cmake --build --preset pi-debug
+cmake --preset arm-debug && cmake --build --preset arm-debug
 ```
 
 ---
@@ -135,7 +135,7 @@ Builds an optimised Pi binary and packages it as `.deb` and `.tar.gz`:
 cmake --workflow --preset ship
 ```
 
-The `.deb` package is written to `build/pi-release/`. Install it on the Pi:
+The `.deb` package is written to `build/arm-release/`. Install it on the Pi:
 
 ```bash
 sudo apt install ./warden-1.0.0-arm64.deb
@@ -163,7 +163,7 @@ cmake --workflow --preset build-and-test && cmake --workflow --preset tidy
 **VS Code task:** `Format all sources` (`Ctrl+S` formats the current file on save)
 
 ```bash
-cmake --preset pi-debug && cmake --build --preset pi-debug --target format
+cmake --preset arm-debug && cmake --build --preset arm-debug --target format
 ```
 
 ---

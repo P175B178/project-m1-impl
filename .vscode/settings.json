@@ -2,7 +2,7 @@
   // CMake
   "cmake.generator": "Ninja",
   "cmake.configureOnOpen": true,
-  "cmake.configurePreset": "pi-debug",
+  "cmake.configurePreset": "arm-debug",
 
   // C/C++ IntelliSense — driven by CMake Tools
   "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",

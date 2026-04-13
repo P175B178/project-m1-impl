@@ -13,7 +13,7 @@ if ! find include src \( -name '*.cpp' -o -name '*.hpp' \) \
      | xargs clang-format --dry-run --Werror 2>&1; then
     echo ""
     echo "Formatting errors found. Run the 'Format all sources' task"
-    echo "or: cmake --preset pi-debug && cmake --build --preset pi-debug --target format"
+    echo "or: cmake --preset arm-debug && cmake --build --preset arm-debug --target format"
     exit 1
 fi
 

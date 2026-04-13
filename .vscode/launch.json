@@ -5,7 +5,7 @@
       "name": "Remote ARM Debug",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/pi-debug/warden",
+      "program": "${workspaceFolder}/build/arm-debug/warden",
       "args": [],
       "cwd": "${workspaceFolder}",
       "stopAtEntry": false,

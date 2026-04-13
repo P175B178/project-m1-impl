@@ -5,14 +5,14 @@
     {
       "label": "ARM: Build",
       "type": "shell",
-      "command": "cmake --preset pi-debug && cmake --build --preset pi-debug",
+      "command": "cmake --preset arm-debug && cmake --build --preset arm-debug",
       "group": { "kind": "build", "isDefault": true },
       "problemMatcher": ["$gcc"]
     },
     {
       "label": "ARM: Build (Release)",
       "type": "shell",
-      "command": "cmake --preset pi-release && cmake --build --preset pi-release",
+      "command": "cmake --preset arm-release && cmake --build --preset arm-release",
       "group": "build",
       "problemMatcher": ["$gcc"]
     },
@@ -110,7 +110,7 @@
     {
       "label": "Format all sources",
       "type": "shell",
-      "command": "cmake --preset pi-debug && cmake --build --preset pi-debug --target format",
+      "command": "cmake --preset arm-debug && cmake --build --preset arm-debug --target format",
       "problemMatcher": []
     },
     {
