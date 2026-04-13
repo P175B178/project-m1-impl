@@ -39,9 +39,12 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install system dependencies
-        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build clang-tidy
+        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build clang clang-tidy
 
       - name: Configure CMake
+        env:
+          CC: clang
+          CXX: clang++
         run: |
           cmake -B build -G Ninja \
             -DCMAKE_BUILD_TYPE=Debug \
