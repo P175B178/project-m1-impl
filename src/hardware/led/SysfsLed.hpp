@@ -14,24 +14,24 @@ namespace warden::hardware {
 /// brightness 0 = on and brightness 1 = off, opposite to the convention.
 class SysfsLed {
 public:
-    /// @param name     LED name as it appears under /sys/class/leds/, e.g. "ACT"
-    /// @param inverted true if 0=on, 1=off (e.g. Pi 5 ACT LED)
-    explicit SysfsLed(std::string name, bool inverted = false);
-    ~SysfsLed();
+  /// @param name     LED name as it appears under /sys/class/leds/, e.g. "ACT"
+  /// @param inverted true if 0=on, 1=off (e.g. Pi 5 ACT LED)
+  explicit SysfsLed(std::string name, bool inverted = false);
+  ~SysfsLed();
 
-    SysfsLed(const SysfsLed&)            = delete;
-    SysfsLed& operator=(const SysfsLed&) = delete;
-    SysfsLed(SysfsLed&&)                 = delete;
-    SysfsLed& operator=(SysfsLed&&)      = delete;
+  SysfsLed(const SysfsLed &) = delete;
+  SysfsLed &operator=(const SysfsLed &) = delete;
+  SysfsLed(SysfsLed &&) = delete;
+  SysfsLed &operator=(SysfsLed &&) = delete;
 
-    void setOn()  noexcept;
-    void setOff() noexcept;
+  void setOn() noexcept;
+  void setOff() noexcept;
 
 private:
-    static void writeFile(const std::string& path, const char* value) noexcept;
+  static void writeFile(const std::string &path, const char *value) noexcept;
 
-    std::string basePath_;  // /sys/class/leds/<name>
-    bool        inverted_;
+  std::string basePath_; // /sys/class/leds/<name>
+  bool inverted_;
 };
 
 } // namespace warden::hardware

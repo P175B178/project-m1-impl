@@ -124,6 +124,19 @@ Requires the debug binary to already be deployed — run the deploy step first.
 
 ## Utilities
 
+**Format all source files** (`include/` and `src/`) according to `.clang-format`:
+
+**VS Code task:** `Local: Format all sources`
+
+```bash
+cmake --build --preset debug --target format
+```
+
+> [!TIP]
+> Files are also formatted automatically on save (`Ctrl+S`) inside the dev container.
+
+---
+
 **SSH shell into the Pi:**
 
 **VS Code task:** `ARM: SSH shell`

@@ -1,4 +1,4 @@
-FROM debian:trixie-slim
+FROM debian:13-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -21,6 +21,8 @@ RUN dpkg --add-architecture arm64 \
     file \
     gdb \
     gdb-multiarch \
+    clang \
+    clang-format \
     clang-tidy \
     doxygen \
     gcc-aarch64-linux-gnu \

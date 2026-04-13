@@ -21,24 +21,24 @@ namespace warden::hardware {
 /// of hardware resources — two instances driving the same LEDs would conflict.
 class StatusLed : public warden::Led {
 public:
-    StatusLed();
-    ~StatusLed() override;
+  StatusLed();
+  ~StatusLed() override;
 
-    StatusLed(const StatusLed&)            = delete;
-    StatusLed& operator=(const StatusLed&) = delete;
-    StatusLed(StatusLed&&)                 = delete;
-    StatusLed& operator=(StatusLed&&)      = delete;
+  StatusLed(const StatusLed &) = delete;
+  StatusLed &operator=(const StatusLed &) = delete;
+  StatusLed(StatusLed &&) = delete;
+  StatusLed &operator=(StatusLed &&) = delete;
 
-    void setMode(warden::LedColor color, bool blink = false) override;
-    void setOff() override;
+  void setMode(warden::LedColor color, bool blink = false) override;
+  void setOff() override;
 
 private:
-    void startBlinking();
-    void stopBlinking();
+  void startBlinking();
+  void stopBlinking();
 
-    SysfsLed     act_{"ACT", /*inverted=*/true};   // green
-    SysfsLed     pwr_{"PWR", /*inverted=*/false};  // red
-    std::jthread blinkThread_;
+  SysfsLed act_{"ACT", /*inverted=*/true};  // green
+  SysfsLed pwr_{"PWR", /*inverted=*/false}; // red
+  std::jthread blinkThread_;
 };
 
 } // namespace warden::hardware

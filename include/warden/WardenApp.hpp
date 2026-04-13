@@ -18,24 +18,24 @@ namespace warden {
 /// conforming implementation.
 class WardenApp {
 public:
-    WardenApp(Sensor& sensor, Led& led, Buzzer& buzzer, const Config& config);
+  WardenApp(Sensor &sensor, Led &led, Buzzer &buzzer, const Config &config);
 
-    /// Run the monitoring loop until `running` becomes false.
-    /// Sets the LED to green on entry, turns it off on exit.
-    void run(const std::atomic<bool>& running);
+  /// Run the monitoring loop until `running` becomes false.
+  /// Sets the LED to green on entry, turns it off on exit.
+  void run(const std::atomic<bool> &running);
 
-    /// Apply the LED and buzzer reaction for a state transition.
-    void applyTransition(const StateTransition& transition);
+  /// Apply the LED and buzzer reaction for a state transition.
+  void applyTransition(const StateTransition &transition);
 
 private:
-    Sensor&       sensor_;
-    Led&          led_;
-    Buzzer&       buzzer_;
-    const Config& config_;
+  Sensor &sensor_;
+  Led &led_;
+  Buzzer &buzzer_;
+  const Config &config_;
 
-    StateMachine           stateMachine_;
-    AveragingBuffer<float> tempBuffer_;
-    AveragingBuffer<float> humBuffer_;
+  StateMachine stateMachine_;
+  AveragingBuffer<float> tempBuffer_;
+  AveragingBuffer<float> humBuffer_;
 };
 
 } // namespace warden

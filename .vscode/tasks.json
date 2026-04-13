@@ -78,6 +78,13 @@
         }
       }
     },
+    // ── Utilities ───────────────────────────────────────────────────────────
+    {
+      "label": "Local: Format all sources",
+      "type": "shell",
+      "command": "cmake --build --preset debug --target format",
+      "problemMatcher": []
+    },
     // ── Pi Setup (one-time) ──────────────────────────────────────────────────
     {
       "label": "Pi: Setup SSH key",

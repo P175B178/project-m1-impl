@@ -7,6 +7,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 option(ENABLE_HARDWARE "Build hardware drivers (requires libgpiod, only for Raspberry Pi)" OFF)
+option(ENABLE_CLANG_TIDY "Run clang-tidy on every translation unit during build" OFF)
+
+if(ENABLE_CLANG_TIDY)
+    find_program(CLANG_TIDY_EXE clang-tidy REQUIRED)
+    set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY_EXE})
+endif()
 
 # ── Dependencies ──────────────────────────────────────────────────────────────
 include(FetchContent)
@@ -72,6 +78,19 @@ if(ENABLE_HARDWARE)
 else()
     target_link_libraries(warden PRIVATE warden_core)
     target_compile_definitions(warden PRIVATE HARDWARE_DISABLED)
+endif()
+
+# ── Format target ────────────────────────────────────────────────────────────
+find_program(CLANG_FORMAT_EXE clang-format)
+if(CLANG_FORMAT_EXE)
+    file(GLOB_RECURSE ALL_SOURCE_FILES
+        "${CMAKE_SOURCE_DIR}/include/*.hpp"
+        "${CMAKE_SOURCE_DIR}/src/*.cpp"
+    )
+    add_custom_target(format
+        COMMAND ${CLANG_FORMAT_EXE} -i ${ALL_SOURCE_FILES}
+        COMMENT "Formatting all source files"
+    )
 endif()
 
 # ── Tests ─────────────────────────────────────────────────────────────────────
