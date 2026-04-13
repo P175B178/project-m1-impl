@@ -21,7 +21,7 @@
   // before the container starts (runs on the local machine).
   "initializeCommand": "sh .devcontainer/init.sh || .devcontainer\\init.bat || exit 0",
 
-  "postCreateCommand": "git config core.hooksPath hooks",
+  "postCreateCommand": "git config core.hooksPath .githooks",
 
   // Injects .env into the container environment so VS Code server, terminals,
   // tasks, and launch.json ${env:} variables all see the same values.

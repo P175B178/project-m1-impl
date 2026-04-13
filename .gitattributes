@@ -5,7 +5,7 @@
 *.sh text eol=lf
 
 # Git hooks must be executable
-hooks/* text eol=lf
+.githooks/* text eol=lf
 
 # Windows-specific files keep CRLF
 *.bat text eol=crlf
