@@ -178,6 +178,12 @@ Clang-format runs automatically:
 - on save (`Ctrl+S`) in VS Code
 - on every commit via the git pre-commit hook
 
+The pre-commit hook lives in `.githooks/` and is configured automatically when the dev container starts. If you're working outside the container, run once after cloning:
+
+```bash
+git config core.hooksPath .githooks
+```
+
 To reformat all files manually:
 
 **VS Code task:** `Format all sources`
@@ -193,7 +199,7 @@ Builds, runs tests, and runs static analysis (clang-tidy):
 **VS Code task:** `Workflow: Verify`
 
 ```bash
-cmake --workflow --preset verify && cmake --workflow --preset tidy
+cmake --preset debug && cmake --build --preset debug --target format && git diff --exit-code && cmake --workflow --preset tidy && cmake --build --preset debug && ctest --preset debug
 ```
 
 ### Clean build directories

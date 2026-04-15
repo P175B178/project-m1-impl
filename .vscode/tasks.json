@@ -94,7 +94,7 @@
     {
       "label": "Workflow: Verify",
       "type": "shell",
-      "command": "cmake --workflow --preset verify && cmake --workflow --preset tidy",
+      "command": "cmake --preset debug && cmake --build --preset debug --target format && cmake --workflow --preset tidy && cmake --build --preset debug && ctest --preset debug",
       "problemMatcher": ["$gcc"]
     },
     {

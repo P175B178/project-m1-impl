@@ -9,11 +9,15 @@ if ! command -v clang-format &>/dev/null; then
     exit 0
 fi
 
-if ! find include src \( -name '*.cpp' -o -name '*.hpp' \) \
-     | xargs clang-format --dry-run --Werror 2>&1; then
+if [ ! -f build/debug/build.ninja ]; then
+    cmake --preset debug > /dev/null 2>&1
+fi
+
+cmake --build --preset debug --target format > /dev/null 2>&1
+
+if ! git diff --exit-code --quiet; then
     echo ""
-    echo "Formatting errors found. Run the 'Format all sources' task"
-    echo "or: cmake --preset arm-debug && cmake --build --preset arm-debug --target format"
+    echo "Formatting errors found — files were reformatted. Stage the changes and commit again."
     exit 1
 fi
 

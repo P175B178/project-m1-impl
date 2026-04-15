@@ -76,15 +76,6 @@
 
   "workflowPresets": [
     {
-      "name": "verify",
-      "displayName": "Verify — build and test",
-      "steps": [
-        { "type": "configure", "name": "debug" },
-        { "type": "build",     "name": "debug" },
-        { "type": "test",      "name": "debug" }
-      ]
-    },
-    {
       "name": "tidy",
       "displayName": "Tidy — static analysis",
       "steps": [
