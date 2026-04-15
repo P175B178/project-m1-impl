@@ -6,9 +6,9 @@
 #include <array>
 #include <atomic>
 #include <csignal>
-#include <cstdio>
 #include <cstdlib>
 #include <getopt.h>
+#include <print>
 #include <string>
 
 #ifdef HARDWARE_DISABLED
@@ -29,16 +29,16 @@ void onSignal(int /*signal*/) { running = false; }
 
 // ── CLI ────────────────────────────────────────────────────────────────────
 static void printHelp(const char *argv0) {
-  std::printf("Usage: %s [options]\n"
-              "\n"
-              "Options:\n"
-              "  -c, --config <path>   Config file (default: /etc/warden/config.cfg)\n"
-              "  -v, --version         Print version and exit\n"
-              "  -h, --help            Print this help and exit\n",
-              argv0);
+  std::println("Usage: {} [options]\n"
+               "\n"
+               "Options:\n"
+               "  -c, --config <path>   Config file (default: /etc/warden/config.cfg)\n"
+               "  -v, --version         Print version and exit\n"
+               "  -h, --help            Print this help and exit",
+               argv0);
 }
 
-static void printVersion() { std::printf("warden %s\n", WARDEN_VERSION); }
+static void printVersion() { std::println("warden {}", WARDEN_VERSION); }
 
 // ── Entry point ────────────────────────────────────────────────────────────
 int main(int argc, char *argv[]) { // NOLINT(bugprone-exception-escape)
