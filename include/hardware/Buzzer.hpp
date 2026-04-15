@@ -12,11 +12,13 @@ public:
   Buzzer(Buzzer &&)                 = delete;
   Buzzer &operator=(Buzzer &&)      = delete;
 
-  /// Emit one or more short beeps.
+  /// Emit one or more short beeps. Non-blocking — returns immediately.
+  /// A new call cancels any beep currently in progress.
   /// @param count Number of beeps to emit.
   virtual void shortBeep(int count) = 0;
 
-  /// Emit one or more long beeps.
+  /// Emit one or more long beeps. Non-blocking — returns immediately.
+  /// A new call cancels any beep currently in progress.
   /// @param count Number of beeps to emit.
   virtual void longBeep(int count) = 0;
 };
