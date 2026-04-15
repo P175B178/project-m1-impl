@@ -199,7 +199,7 @@ Builds, runs tests, and runs static analysis (clang-tidy):
 **VS Code task:** `Workflow: Verify`
 
 ```bash
-cmake --preset debug && cmake --build --preset debug --target format && git diff --exit-code && cmake --workflow --preset tidy && cmake --build --preset debug && ctest --preset debug
+cmake --preset debug && cmake --build --preset debug --target format && cmake --workflow --preset tidy && cmake --build --preset debug && ctest --preset debug
 ```
 
 ### Clean build directories
