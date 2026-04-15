@@ -12,6 +12,8 @@ public:
   void shortBeep(int count) override { spdlog::info("[BUZZER] {} short beep(s)", count); }
 
   void longBeep(int count) override { spdlog::info("[BUZZER] {} long beep(s)", count); }
+
+  void setOff() override { spdlog::info("[BUZZER] off"); }
 };
 
 } // namespace warden::sim

@@ -16,6 +16,9 @@ enum class SensorError : std::uint8_t {
 };
 
 /// Abstract sensor interface.
+///
+/// Read errors are modelled as std::expected values rather than exceptions
+/// because sensor failures are expected, recoverable conditions — not programming errors.
 class Sensor {
 public:
   Sensor()                          = default;
@@ -25,6 +28,8 @@ public:
   Sensor(Sensor &&)                 = delete;
   Sensor &operator=(Sensor &&)      = delete;
 
+  /// Read the current temperature and humidity from the sensor.
+  /// @return A Reading on success, or a SensorError describing the failure.
   [[nodiscard]] virtual std::expected<Reading, SensorError> read() const = 0;
 };
 

@@ -31,6 +31,7 @@ public:
 
   void shortBeep(int count) override;
   void longBeep(int count) override;
+  void setOff() override;
 
 private:
   void startBeeping(std::chrono::milliseconds duration, int count);

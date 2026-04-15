@@ -35,6 +35,12 @@ GpioBuzzer::~GpioBuzzer() {
   pin.setLow();
 }
 
+void GpioBuzzer::setOff() {
+  spdlog::debug("GpioBuzzer: setOff");
+  stopBeeping();
+  pin.setLow();
+}
+
 void GpioBuzzer::shortBeep(int count) {
   spdlog::debug("GpioBuzzer: {} short beep(s)", count);
   startBeeping(shortBeepDuration, count);
