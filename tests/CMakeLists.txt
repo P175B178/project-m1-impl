@@ -6,7 +6,8 @@ add_executable(warden_tests
 
 target_link_libraries(warden_tests PRIVATE
     warden_core
-    Catch2::Catch2WithMain
+    GTest::gtest_main
+    GTest::gmock
 )
 
 target_include_directories(warden_tests PRIVATE
@@ -14,5 +15,5 @@ target_include_directories(warden_tests PRIVATE
     ${CMAKE_SOURCE_DIR}/src/core
 )
 
-include(Catch)
-catch_discover_tests(warden_tests)
+include(GoogleTest)
+gtest_discover_tests(warden_tests)

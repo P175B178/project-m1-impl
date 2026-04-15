@@ -31,12 +31,12 @@ FetchContent_MakeAvailable(tomlplusplus)
 
 if(BUILD_TESTING)
     FetchContent_Declare(
-        Catch2
-        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-        GIT_TAG        v3.8.1
-        FIND_PACKAGE_ARGS 3
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG        v1.16.0
+        FIND_PACKAGE_ARGS
     )
-    FetchContent_MakeAvailable(Catch2)
+    FetchContent_MakeAvailable(googletest)
 endif()
 
 # ── clang-tidy (set after FetchContent so it only applies to project targets) ─

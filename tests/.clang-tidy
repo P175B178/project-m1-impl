@@ -1,13 +1,13 @@
 InheritParentConfig: true
+
+# cppcoreguidelines-avoid-do-while: gtest EXPECT_*/ASSERT_* macros expand to do-while loops internally.
+# readability-function-cognitive-complexity: gtest TEST/TEST_F macro expansion inflates complexity scores artificially.
+# bugprone-unchecked-optional-access: ASSERT_TRUE(t.has_value()) guards subsequent t->field accesses, but tidy cannot see that ASSERT aborts the test on failure.
+# readability-magic-numbers: literal values in tests are expected values, not magic numbers.
+# readability-identifier-length: test code is scoped to a single method — short names are clear in context.
 Checks: >
   -cppcoreguidelines-avoid-do-while,
   -readability-function-cognitive-complexity,
-  -clang-analyzer-optin.core.EnumCastOutOfRange,
   -bugprone-unchecked-optional-access,
-  -bugprone-easily-swappable-parameters
-
-# cppcoreguidelines-avoid-do-while: Catch2 REQUIRE/REQUIRE_FALSE macros expand to do-while loops internally.
-# readability-function-cognitive-complexity: Catch2 TEST_CASE macro expansion inflates complexity scores artificially.
-# clang-analyzer-optin.core.EnumCastOutOfRange: Catch2 REQUIRE_FALSE macro ORs ResultDisposition::Flags producing value 5 (0x01|0x04), not a declared enumerator — Catch2 internals, not our code.
-# bugprone-unchecked-optional-access: Tests use REQUIRE(t.has_value()) before accessing t->field, but tidy cannot see that REQUIRE aborts on failure.
-# bugprone-easily-swappable-parameters: StateMachine(float,float) and beep(int,int,int) — API design, suppressed here since tests call both.
+  -readability-magic-numbers,
+  -readability-identifier-length
