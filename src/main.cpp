@@ -4,11 +4,11 @@
 #include <spdlog/spdlog.h>
 
 #include <array>
-#include <atomic>
 #include <csignal>
 #include <cstdlib>
 #include <getopt.h>
 #include <print>
+#include <stop_token>
 #include <string>
 
 #ifdef HARDWARE_DISABLED
@@ -23,8 +23,8 @@
 
 // ── Signal handling ────────────────────────────────────────────────────────
 namespace {
-std::atomic<bool> running{true}; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
-void onSignal(int /*signal*/) { running = false; }
+std::stop_source appStop; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+void onSignal(int /*signal*/) { appStop.request_stop(); }
 } // namespace
 
 // ── CLI ────────────────────────────────────────────────────────────────────
@@ -44,10 +44,12 @@ static void printVersion() { std::println("warden {}", WARDEN_VERSION); }
 int main(int argc, char *argv[]) { // NOLINT(bugprone-exception-escape)
   std::string configPath{"/etc/warden/config.cfg"};
 
-  static const std::array<option, 4> longOpts{{{.name = "config", .has_arg = required_argument, .flag = nullptr, .val = 'c'},
-                                               {.name = "version", .has_arg = no_argument, .flag = nullptr, .val = 'v'},
-                                               {.name = "help", .has_arg = no_argument, .flag = nullptr, .val = 'h'},
-                                               {.name = nullptr, .has_arg = 0, .flag = nullptr, .val = 0}}};
+  static const std::array<option, 4> longOpts{{
+      {.name = "config", .has_arg = required_argument, .flag = nullptr, .val = 'c'},
+      {.name = "version", .has_arg = no_argument, .flag = nullptr, .val = 'v'},
+      {.name = "help", .has_arg = no_argument, .flag = nullptr, .val = 'h'},
+      {.name = nullptr, .has_arg = 0, .flag = nullptr, .val = 0},
+  }};
 
   int opt = 0;
   // NOLINTBEGIN(cppcoreguidelines-pro-bounds-array-to-pointer-decay, cppcoreguidelines-pro-bounds-pointer-arithmetic)
@@ -82,20 +84,18 @@ int main(int argc, char *argv[]) { // NOLINT(bugprone-exception-escape)
   spdlog::info("Read interval: {}s, averaging window: {} samples", config.readInterval.count(), config.averagingWindow);
 
 #ifdef HARDWARE_DISABLED
-  std::puts(
-    "\n"
-    "  ╔══════════════════════════════════════════════════════╗\n"
-    "  ║                                                      ║\n"
-    "  ║   *** S I M U L A T I O N   M O D E ***              ║\n"
-    "  ║                                                      ║\n"
-    "  ║   No real hardware. Sensor readings are fake.        ║\n"
-    "  ║   Do NOT use this output for anything real.          ║\n"
-    "  ║                                                      ║\n"
-    "  ╚══════════════════════════════════════════════════════╝\n"
-  );
+  std::puts("\n"
+            "  ╔══════════════════════════════════════════════════════╗\n"
+            "  ║                                                      ║\n"
+            "  ║   *** S I M U L A T I O N   M O D E ***              ║\n"
+            "  ║                                                      ║\n"
+            "  ║   No real hardware. Sensor readings are fake.        ║\n"
+            "  ║   Do NOT use this output for anything real.          ║\n"
+            "  ║                                                      ║\n"
+            "  ╚══════════════════════════════════════════════════════╝\n");
   spdlog::warn("Hardware disabled — running with simulated sensor");
-  warden::sim::SimSensor  sensor;
-  warden::sim::StubLed    led;
+  warden::sim::SimSensor sensor;
+  warden::sim::StubLed led;
   warden::sim::StubBuzzer buzzer;
 #else
   warden::hardware::Dht22Sensor sensor{"/sys/bus/iio/devices/iio:device0", config.minTemperature, config.maxTemperature,
@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) { // NOLINT(bugprone-exception-escape)
   spdlog::info("Running — press Ctrl-C to stop");
 
   warden::WardenApp app{sensor, led, buzzer, config};
-  app.run(running);
+  app.run(appStop.get_token());
 
   spdlog::info("Shutting down");
   return EXIT_SUCCESS;
