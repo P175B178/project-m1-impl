@@ -34,6 +34,7 @@ public:
 
 private:
   void applyColor(warden::LedColor color);
+  void clearPins();
   void startBlinking(warden::LedColor color);
   void stopBlinking();
 
