@@ -14,7 +14,7 @@ WardenApp::WardenApp(Sensor &sensor, Led &led, Buzzer &buzzer, const Config &con
       humBuffer{config.averagingWindow} {}
 
 void WardenApp::run(const std::atomic<bool> &running) {
-  led->setMode(LedColor::Green);
+  led->setMode(LedColor::Green, false);
 
   while (running) {
     const auto result = sensor->read();
@@ -34,7 +34,7 @@ void WardenApp::run(const std::atomic<bool> &running) {
       spdlog::info("temp={:.1f}°C (raw={:.1f})  hum={:.1f}% (raw={:.1f})  state={}", avgTemp, result->temperature,
                    avgHum, result->humidity, stateToString(stateMachine.currentState()));
 
-      const auto transition = stateMachine.update(avgTemp, avgHum);
+      const auto transition = stateMachine.update({.temperature = avgTemp, .humidity = avgHum});
       if (transition) {
         spdlog::warn("State change: {} → {}", stateToString(transition->from), stateToString(transition->to));
         applyTransition(*transition);
@@ -47,8 +47,8 @@ void WardenApp::run(const std::atomic<bool> &running) {
   led->setOff();
 }
 
-void WardenApp::applyTransition(const StateTransition &t) {
-  switch (t.to) {
+void WardenApp::applyTransition(const StateTransition &transition) {
+  switch (transition.to) {
   case State::Normal:
     led->setMode(LedColor::Green, false);
     break;
@@ -60,10 +60,10 @@ void WardenApp::applyTransition(const StateTransition &t) {
     break;
   }
 
-  if (t.to == State::Alert) {
-    buzzer->beep(3, 100, 100); // three short beeps on entering Alert
-  } else if (t.from == State::Alert) {
-    buzzer->beep(1, 500, 0); // one long beep on leaving Alert
+  if (transition.to == State::Alert) {
+    buzzer->shortBeep(3); // NOLINT(readability-magic-numbers)
+  } else if (transition.from == State::Alert) {
+    buzzer->longBeep(1);
   }
 }
 

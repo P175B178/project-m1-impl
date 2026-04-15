@@ -12,11 +12,13 @@ public:
   Buzzer(Buzzer &&) = delete;
   Buzzer &operator=(Buzzer &&) = delete;
 
-  /// Emit a series of beeps.
-  /// @param count      Number of beeps.
-  /// @param durationMs Duration of each beep in milliseconds.
-  /// @param pauseMs    Pause between beeps in milliseconds.
-  virtual void beep(int count, int durationMs, int pauseMs) = 0;
+  /// Emit one or more short beeps.
+  /// @param count Number of beeps to emit.
+  virtual void shortBeep(int count) = 0;
+
+  /// Emit one or more long beeps.
+  /// @param count Number of beeps to emit.
+  virtual void longBeep(int count) = 0;
 };
 
 } // namespace warden

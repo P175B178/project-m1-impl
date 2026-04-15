@@ -6,6 +6,7 @@
 namespace warden {
 
 /// All runtime configuration, loaded from a key=value file at startup.
+// NOLINTBEGIN(readability-magic-numbers)
 struct Config {
   // Sensor
   std::chrono::seconds readInterval{5};
@@ -22,5 +23,6 @@ struct Config {
   float minHumidity{0.0F};
   float maxHumidity{100.0F};
 };
+// NOLINTEND(readability-magic-numbers)
 
 } // namespace warden

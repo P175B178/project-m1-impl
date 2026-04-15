@@ -5,6 +5,7 @@
 
 #include <chrono>
 #include <cmath>
+#include <numbers>
 
 namespace warden::sim {
 
@@ -16,14 +17,17 @@ public:
     [[nodiscard]] std::expected<Reading, SensorError> read() const override {
         using namespace std::chrono;
         const auto now   = system_clock::now();
-        const double t   = duration<double>(now.time_since_epoch()).count();
-        const double slow = t / 60.0; // one full cycle every ~6 minutes
+        // NOLINTBEGIN(readability-magic-numbers)
+        constexpr double cyclePeriodSeconds = 6.0 * 60.0; // change to adjust oscillation speed
+        const double elapsed = duration<double>(now.time_since_epoch()).count();
+        const double phase   = elapsed / cyclePeriodSeconds * (2.0 * std::numbers::pi); // radians: 0 to 2π over one cycle
 
-        Reading r;
-        r.timestamp   = now;
-        r.temperature = 24.0F + 8.0F  * static_cast<float>(std::sin(slow));        // 16–32 °C
-        r.humidity    = 55.0F + 20.0F * static_cast<float>(std::sin(slow * 0.7));   // 35–75 %
-        return r;
+        Reading reading;
+        reading.timestamp   = now;
+        reading.temperature = 24.0F + 8.0F  * static_cast<float>(std::sin(phase));        // 16–32 °C
+        reading.humidity    = 55.0F + 20.0F * static_cast<float>(std::sin(phase * 0.7));   // 35–75 %
+        // NOLINTEND(readability-magic-numbers)
+        return reading;
     }
 };
 

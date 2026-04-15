@@ -54,7 +54,7 @@
     { "name": "debug",       "configurePreset": "debug" },
     { "name": "pi-debug",    "configurePreset": "pi-debug" },
     { "name": "pi-release",  "configurePreset": "pi-release" },
-    { "name": "clang-tidy",  "configurePreset": "clang-tidy" }
+    { "name": "clang-tidy",  "configurePreset": "clang-tidy", "cleanFirst": true }
   ],
   "testPresets": [
     {

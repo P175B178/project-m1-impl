@@ -3,6 +3,7 @@
 #include "GpioPin.hpp"
 #include "hardware/Buzzer.hpp"
 
+#include <chrono>
 #include <string>
 
 namespace warden::hardware {
@@ -14,9 +15,12 @@ public:
   /// @param chipPath  GPIO chip device path, e.g. "/dev/gpiochip4"
   explicit GpioBuzzer(const std::string &chipPath);
 
-  void beep(int count, int durationMs, int pauseMs) override;
+  void shortBeep(int count) override;
+  void longBeep(int count) override;
 
 private:
+  void emitTone(std::chrono::milliseconds duration);
+
   GpioPin pin;
 };
 

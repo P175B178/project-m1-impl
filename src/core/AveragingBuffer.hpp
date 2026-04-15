@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <numeric>
 #include <optional>
 #include <stdexcept>
 #include <vector>
@@ -32,11 +33,7 @@ public:
     if (count == 0) {
       return std::nullopt;
     }
-    T sum{};
-    for (std::size_t i = 0; i < count; ++i) {
-      sum += buffer[i];
-    }
-    return sum / static_cast<T>(count);
+    return std::accumulate(buffer.begin(), buffer.begin() + count, T{}) / static_cast<T>(count);
   }
 
   [[nodiscard]] std::size_t size() const noexcept { return count; }

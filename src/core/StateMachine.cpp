@@ -4,11 +4,11 @@
 
 namespace warden {
 
-StateMachine::StateMachine(float temperatureThreshold, float humidityThreshold)
+StateMachine::StateMachine(float temperatureThreshold, float humidityThreshold) // NOLINT(bugprone-easily-swappable-parameters)
     : temperatureThreshold{temperatureThreshold}, humidityThreshold{humidityThreshold} {}
 
-std::optional<StateTransition> StateMachine::update(float temperature, float humidity) {
-  const State newState = evaluate(temperature, humidity);
+std::optional<StateTransition> StateMachine::update(Sample sample) {
+  const State newState = evaluate(sample);
   if (newState == state) {
     return std::nullopt;
   }
@@ -18,12 +18,12 @@ std::optional<StateTransition> StateMachine::update(float temperature, float hum
   return transition;
 }
 
-State StateMachine::evaluate(float temperature, float humidity) const noexcept {
-  const bool tempExceeded = temperature > temperatureThreshold;
-  const bool humExceeded = humidity > humidityThreshold;
+State StateMachine::evaluate(Sample sample) const noexcept {
+  const bool tempExceeded = sample.temperature > temperatureThreshold;
+  const bool humExceeded  = sample.humidity > humidityThreshold;
 
   spdlog::debug("StateMachine: temp={:.1f} (threshold={:.1f}, exceeded={}) hum={:.1f} (threshold={:.1f}, exceeded={})",
-                temperature, temperatureThreshold, tempExceeded, humidity, humidityThreshold, humExceeded);
+                sample.temperature, temperatureThreshold, tempExceeded, sample.humidity, humidityThreshold, humExceeded);
 
   if (tempExceeded && humExceeded) {
     return State::Alert;

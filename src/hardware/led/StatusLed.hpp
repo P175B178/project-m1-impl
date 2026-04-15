@@ -29,7 +29,7 @@ public:
   StatusLed(StatusLed &&) = delete;
   StatusLed &operator=(StatusLed &&) = delete;
 
-  void setMode(warden::LedColor color, bool blink = false) override;
+  void setMode(warden::LedColor color, bool blink) override;
   void setOff() override;
 
 private:

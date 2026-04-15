@@ -17,7 +17,7 @@ public:
   Led(Led &&) = delete;
   Led &operator=(Led &&) = delete;
 
-  virtual void setMode(LedColor color, bool blink = false) = 0;
+  virtual void setMode(LedColor color, bool blink) = 0;
 
   /// Turn the LED off unconditionally (used on shutdown).
   virtual void setOff() = 0;

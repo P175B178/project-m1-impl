@@ -10,7 +10,7 @@ namespace warden::sim {
 /// No-op LED that logs state changes to the console.
 class StubLed final : public Led {
 public:
-    void setMode(LedColor color, bool blink = false) override {
+    void setMode(LedColor color, bool blink) override {
         spdlog::info("[LED] {} {}", toString(color), blink ? "blinking" : "");
     }
 
@@ -19,8 +19,8 @@ public:
     }
 
 private:
-    static const char *toString(LedColor c) {
-        switch (c) {
+    static const char *toString(LedColor color) {
+        switch (color) {
         case LedColor::Green:  return "green";
         case LedColor::Orange: return "orange";
         case LedColor::Red:    return "red";

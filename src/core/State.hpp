@@ -11,8 +11,8 @@ enum class State : std::uint8_t {
   Alert    ///< Both thresholds exceeded
 };
 
-constexpr std::string_view stateToString(State s) noexcept {
-  switch (s) {
+constexpr std::string_view stateToString(State state) noexcept {
+  switch (state) {
   case State::Normal:
     return "Normal";
   case State::Warning:
