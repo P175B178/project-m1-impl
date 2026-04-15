@@ -9,18 +9,17 @@ Checks: >
   -modernize-use-trailing-return-type,
   -readability-identifier-length,
   -cppcoreguidelines-avoid-magic-numbers,
-  -readability-magic-numbers
+  -readability-magic-numbers,
+  -bugprone-easily-swappable-parameters
 
 WarningsAsErrors: ""
-HeaderFilterRegex: "^.*(include|src)/.*"
 CheckOptions:
+  # Classes use UpperCamelCase:  StateMachine, WardenApp, AveragingBuffer
   - key: readability-identifier-naming.ClassCase
     value: CamelCase
-  - key: readability-identifier-naming.MemberSuffix
-    value: "_"
-  - key: readability-identifier-naming.PrivateMemberSuffix
-    value: "_"
+  # Functions and variables use lowerCamelCase:  currentState(), avgTemp
+  # Note: clang-tidy calls this 'camelBack', not 'camelCase' (which is not a valid value)
   - key: readability-identifier-naming.FunctionCase
-    value: camelCase
+    value: camelBack
   - key: readability-identifier-naming.VariableCase
-    value: camelCase
+    value: camelBack

@@ -3,13 +3,37 @@
   "configurePresets": [
     {
       "name": "debug",
-      "displayName": "Debug (host)",
+      "displayName": "Debug / Sim (host)",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "ENABLE_HARDWARE": "OFF",
         "BUILD_TESTING": "ON"
+      }
+    },
+    {
+      "name": "pi-debug",
+      "displayName": "Pi Debug",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/pi-debug",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/raspberrypi-aarch64.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ENABLE_HARDWARE": "ON",
+        "BUILD_TESTING": "OFF"
+      }
+    },
+    {
+      "name": "pi-release",
+      "displayName": "Pi Release",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/pi-release",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/raspberrypi-aarch64.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "ENABLE_HARDWARE": "ON",
+        "BUILD_TESTING": "OFF"
       }
     },
     {
@@ -24,68 +48,27 @@
         "ENABLE_CLANG_TIDY": "ON",
         "CMAKE_CXX_COMPILER": "clang++"
       }
-    },
-    {
-      "name": "release",
-      "displayName": "Release (host)",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/release",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "ENABLE_HARDWARE": "OFF",
-        "BUILD_TESTING": "ON"
-      }
-    },
-    {
-      "name": "arm-debug",
-      "displayName": "Pi Debug (aarch64)",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/arm-debug",
-      "toolchainFile": "${sourceDir}/cmake/toolchains/raspberrypi-aarch64.cmake",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "ENABLE_HARDWARE": "ON",
-        "BUILD_TESTING": "OFF"
-      }
-    },
-    {
-      "name": "arm-release",
-      "displayName": "Pi Release (aarch64)",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/arm-release",
-      "toolchainFile": "${sourceDir}/cmake/toolchains/raspberrypi-aarch64.cmake",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "ENABLE_HARDWARE": "ON",
-        "BUILD_TESTING": "OFF"
-      }
     }
   ],
   "buildPresets": [
     { "name": "debug",       "configurePreset": "debug" },
-    { "name": "clang-tidy",  "configurePreset": "clang-tidy" },
-    { "name": "release",     "configurePreset": "release" },
-    { "name": "arm-debug",    "configurePreset": "arm-debug" },
-    { "name": "arm-release",  "configurePreset": "arm-release" }
+    { "name": "pi-debug",    "configurePreset": "pi-debug" },
+    { "name": "pi-release",  "configurePreset": "pi-release" },
+    { "name": "clang-tidy",  "configurePreset": "clang-tidy" }
   ],
   "testPresets": [
     {
       "name": "debug",
       "configurePreset": "debug",
       "output": { "outputOnFailure": true }
-    },
-    {
-      "name": "release",
-      "configurePreset": "release",
-      "output": { "outputOnFailure": true }
     }
   ],
 
   "packagePresets": [
     {
-      "name": "arm-release",
-      "displayName": "Pi Release (TGZ + DEB)",
-      "configurePreset": "arm-release",
+      "name": "pi-release",
+      "displayName": "Pi Release",
+      "configurePreset": "pi-release",
       "generators": ["TGZ", "DEB"],
       "packageDirectory": "${sourceDir}/package"
     }
@@ -93,8 +76,8 @@
 
   "workflowPresets": [
     {
-      "name": "build-and-test",
-      "displayName": "Build and test",
+      "name": "verify",
+      "displayName": "Verify — build and test",
       "steps": [
         { "type": "configure", "name": "debug" },
         { "type": "build",     "name": "debug" },
@@ -103,7 +86,7 @@
     },
     {
       "name": "tidy",
-      "displayName": "Tidy — clang-tidy check",
+      "displayName": "Tidy — static analysis",
       "steps": [
         { "type": "configure", "name": "clang-tidy" },
         { "type": "build",     "name": "clang-tidy" }
@@ -113,9 +96,9 @@
       "name": "package",
       "displayName": "Package — Pi release (.deb + .tar.gz)",
       "steps": [
-        { "type": "configure", "name": "arm-release" },
-        { "type": "build",     "name": "arm-release" },
-        { "type": "package",   "name": "arm-release" }
+        { "type": "configure", "name": "pi-release" },
+        { "type": "build",     "name": "pi-release" },
+        { "type": "package",   "name": "pi-release" }
       ]
     }
   ]

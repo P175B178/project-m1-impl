@@ -13,11 +13,11 @@ set -euo pipefail
 
 PORT="${PI_PORT:-22}"
 PI="${PI_USER}@${PI_HOST}"
-LOCAL_TEST_BIN="${1:-build/arm-debug/tests/warden_tests}"
+LOCAL_TEST_BIN="${1:-build/pi-debug/tests/warden_tests}"
 
 if [[ ! -f "${LOCAL_TEST_BIN}" ]]; then
   echo "Test binary not found: ${LOCAL_TEST_BIN}" >&2
-  echo "Build first: cmake --preset arm-debug && cmake --build --preset arm-debug" >&2
+  echo "Build first: cmake --preset pi-debug && cmake --build --preset pi-debug" >&2
   exit 2
 fi
 

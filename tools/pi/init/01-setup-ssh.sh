@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Installs SSH key-based authentication on the Pi (run once).
-# After this, all other scripts work without a password.
+# ONE-TIME: Installs SSH key-based authentication on the Pi.
+# After this, all other scripts connect without a password.
 #
 # Usage:
-#   tools/setup-ssh.sh
+#   tools/pi/01-setup-ssh.sh
 
 : "${PI_USER:?PI_USER not set — copy .env.sample to .env and configure it.}"
 : "${PI_HOST:?PI_HOST not set — copy .env.sample to .env and configure it.}"
+: "${PI_PASSWORD:?PI_PASSWORD not set — copy .env.sample to .env and configure it.}"
 
 PORT="${PI_PORT:-22}"
 PI="${PI_USER}@${PI_HOST}"
@@ -22,7 +23,7 @@ if [[ ! -f "${HOME}/.ssh/id_ed25519.pub" ]]; then
   ssh-keygen -t ed25519 -N "" -f "${HOME}/.ssh/id_ed25519"
 fi
 
-echo "==> Installing SSH key on ${PI} (will prompt for password once)..."
-ssh-copy-id "${SSH_OPTS[@]}" "${PI}"
+echo "==> Installing SSH key on ${PI}..."
+sshpass -p "${PI_PASSWORD}" ssh-copy-id "${SSH_OPTS[@]}" "${PI}"
 
-echo "==> SSH setup complete."
+echo "==> SSH setup complete. Password no longer needed."

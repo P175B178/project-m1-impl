@@ -4,8 +4,8 @@ set -euo pipefail
 # Runs the deployed warden binary on the Pi over SSH.
 #
 # Usage:
-#   tools/run.sh
-#   tools/run.sh /path/to/config.cfg   # custom config path on the Pi
+#   tools/pi/run.sh
+#   tools/pi/run.sh /path/to/config.cfg   # custom config path on the Pi
 
 : "${PI_USER:?PI_USER not set — copy .env.sample to .env and configure it.}"
 : "${PI_HOST:?PI_HOST not set — copy .env.sample to .env and configure it.}"

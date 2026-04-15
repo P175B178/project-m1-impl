@@ -7,7 +7,7 @@ set -euo pipefail
 #   tools/pi/debug.sh
 #
 # Keep this terminal open while debugging. VS Code connects via the
-# "Remote ARM Debug" launch configuration.
+# "Pi: Remote Debug" launch configuration.
 
 : "${PI_USER:?PI_USER not set — copy .env.sample to .env and configure it.}"
 : "${PI_HOST:?PI_HOST not set — copy .env.sample to .env and configure it.}"

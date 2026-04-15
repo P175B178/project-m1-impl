@@ -11,12 +11,14 @@ Built with C++23, cross-compiled inside a dev container, deployed over SSH.
 
 ```text
 include/warden/   — public interfaces and domain types (no hardware deps)
-src/              — core logic (StateMachine, ConfigLoader)
+src/core/         — core logic (StateMachine, ConfigLoader, WardenApp)
 src/hardware/     — hardware drivers (Pi only, compiled with ENABLE_HARDWARE=ON)
+src/sim/          — simulated hardware stubs (host only, compiled with ENABLE_HARDWARE=OFF)
 tests/            — unit tests (run on host)
 tests/mocks/      — mock implementations for testing without hardware
 config/config.cfg — configuration file
-tools/            — SSH/deploy/run helper scripts
+tools/pi/         — Pi helper scripts (SSH, deploy, run, debug)
+tools/pi/init/    — one-time Pi setup scripts (run in order)
 ```
 
 ---
@@ -35,15 +37,27 @@ Open the project folder in VS Code, then when prompted click **Reopen in Contain
 
 ---
 
-## Build
+## Local build and simulation
 
-The default build target is the Pi (aarch64 cross-compiled, hardware enabled).
+The default build targets the host machine (no Pi required). The binary runs with a **simulated sensor** that produces oscillating temperature and humidity values.
 
-**VS Code task:** `ARM: Build` (`Ctrl+Shift+B`)
+**VS Code task:** `Local: Build` (`Ctrl+Shift+B`)
 
 ```bash
-cmake --preset arm-debug && cmake --build --preset arm-debug
+cmake --preset debug && cmake --build --preset debug
 ```
+
+**Run the simulation:**
+
+**VS Code task:** `Local: Run (sim)`
+
+```bash
+./build/debug/warden -c config/config.cfg
+```
+
+**Debug the simulation with breakpoints:**
+
+**VS Code launch config:** `Local: Debug` (`F5`) — builds automatically and launches under GDB.
 
 ---
 
@@ -54,9 +68,10 @@ Tests run on the host — no Pi required. Hardware drivers are replaced by mocks
 **VS Code task:** `Local: Run tests`
 
 ```bash
-cmake --preset debug && cmake --build --preset debug
 ctest --preset debug
 ```
+
+The task builds automatically before running tests.
 
 ---
 
@@ -71,104 +86,119 @@ ctest --preset debug
 # .env
 PI_HOST=<Pi IP address>
 PI_USER=<your username on the Pi>
+PI_PASSWORD=<your Pi password>
 ```
 
 > [!NOTE]
 > `.env` is gitignored and never committed. After editing it, restart the container for the changes to take effect: `Ctrl+Shift+P` → **Dev Containers: Reopen in Container**.
 
-**2. Install SSH key** (once — will prompt for your Pi password):
+**2. Install SSH key** (once — uses `PI_PASSWORD` from `.env`):
 
-**VS Code task:** `Pi: Setup SSH key`
+**VS Code task:** `Pi init: 1. SSH key`
 
 ```bash
-tools/setup-ssh.sh
+tools/pi/init/01-setup-ssh.sh
 ```
 
 **3. Bootstrap the Pi** — installs runtime dependencies and enables the DHT22 kernel driver. Safe to run multiple times.
 
-**VS Code task:** `Pi: Bootstrap`
+**VS Code task:** `Pi init: 2. Bootstrap`
 
 ```bash
-tools/pi/bootstrap.sh
+tools/pi/init/02-bootstrap.sh
 ```
 
-If the DHT22 overlay was not already present, bootstrap will ask you to reboot the Pi. After rebooting, verify the sensor is visible:
+If the DHT22 overlay was not already present, bootstrap will ask you to reboot the Pi. After rebooting, SSH into the Pi (`Pi: SSH` task or `tools/pi/connect.sh`) and verify the sensor is visible:
 
 ```bash
 cat /sys/bus/iio/devices/iio:device0/in_temp_input
 ```
 
-### Deploy and run
+### Build for Pi
 
-**VS Code task:** `ARM: Run` — builds, deploys, and runs in one step
+**VS Code task:** `Pi: Build`
 
 ```bash
-tools/deploy.sh
-tools/run.sh  # streams output to this terminal, Ctrl+C to stop
+cmake --preset pi-debug && cmake --build --preset pi-debug
 ```
 
-To deploy without rebuilding (e.g. after `Ctrl+Shift+B`):
+### Deploy and run
 
-**VS Code task:** `ARM: Deploy`
+**VS Code task:** `Pi: Run` — builds, deploys, and runs in one step
 
 ```bash
-tools/deploy.sh
+cmake --preset pi-debug && cmake --build --preset pi-debug
+tools/pi/deploy.sh
+tools/pi/run.sh  # streams output to this terminal, Ctrl+C to stop
+```
+
+To deploy without rebuilding (e.g. after `Pi: Build`):
+
+**VS Code task:** `Pi: Deploy`
+
+```bash
+tools/pi/deploy.sh
 ```
 
 ---
 
 ## Remote debugging
 
-Requires the debug binary to already be deployed.
+Requires the debug binary to already be deployed (`Pi: Build` + `Pi: Deploy`).
 
-**VS Code launch config:** `Remote ARM Debug` (`F5`) — connects to gdbserver on the Pi automatically. Breakpoints, step-through, and variable inspection all work normally.
+**VS Code launch config:** `Pi: Remote Debug` — connects to gdbserver on the Pi automatically. Select it in the debug dropdown (`Ctrl+Shift+D`) and press `F5`.
+
+Breakpoints, step-through, and variable inspection all work normally.
 
 ---
 
 ## Packaging a release
 
-Builds an optimised Pi binary and packages it as `.deb` and `.tar.gz`:
+Builds an optimized Pi binary and packages it as `.deb` and `.tar.gz`:
 
 **VS Code task:** `Workflow: Package`
 
 ```bash
-cmake --workflow --preset package
+rm -rf package && cmake --workflow --preset package
 ```
 
 The packages are written to `package/`. Install the `.deb` on the Pi:
 
 ```bash
-sudo apt install ./warden-1.0.0-arm64.deb
+sudo apt install ./warden_1.0.0_arm64.deb
 ```
 
 ---
 
 ## Utilities
 
-**Before committing** — run the full test suite and static analysis to match what CI checks:
+### Formatting
+
+Clang-format runs automatically:
+- on save (`Ctrl+S`) in VS Code
+- on every commit via the git pre-commit hook
+
+To reformat all files manually:
+
+**VS Code task:** `Format all sources`
+
+```bash
+cmake --preset debug && cmake --build --preset debug --target format
+```
+
+### Verify before committing
+
+Builds, runs tests, and runs static analysis (clang-tidy):
 
 **VS Code task:** `Workflow: Verify`
 
 ```bash
-cmake --workflow --preset build-and-test && cmake --workflow --preset tidy
+cmake --workflow --preset verify && cmake --workflow --preset tidy
 ```
 
-> [!TIP]
-> Formatting is also checked automatically on every commit via a git pre-commit hook.
+### Clean build directories
 
----
-
-**Format all source files** according to `.clang-format`:
-
-**VS Code task:** `Format all sources` (`Ctrl+S` formats the current file on save)
-
-```bash
-cmake --preset arm-debug && cmake --build --preset arm-debug --target format
-```
-
----
-
-**Clean all build directories** — useful when builds get into a broken state:
+Useful when builds get into a broken state:
 
 **VS Code task:** `Clean all build directories`
 
@@ -176,12 +206,10 @@ cmake --preset arm-debug && cmake --build --preset arm-debug --target format
 rm -rf build
 ```
 
----
-
-**SSH shell into the Pi:**
+### Open a shell on the Pi
 
 **VS Code task:** `Pi: SSH`
 
 ```bash
-tools/connect.sh
+tools/pi/connect.sh
 ```

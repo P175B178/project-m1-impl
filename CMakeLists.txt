@@ -42,7 +42,9 @@ endif()
 # ── clang-tidy (set after FetchContent so it only applies to project targets) ─
 if(ENABLE_CLANG_TIDY)
     find_program(CLANG_TIDY_EXE clang-tidy REQUIRED)
-    set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY_EXE})
+    set(CMAKE_CXX_CLANG_TIDY
+        ${CLANG_TIDY_EXE}
+        "--header-filter=^${CMAKE_SOURCE_DIR}/(include|src|tests)/")
 endif()
 
 # ── Core library (no hardware deps, testable on host) ────────────────────────
@@ -61,6 +63,10 @@ if(ENABLE_HARDWARE)
     add_library(warden_hardware ${HARDWARE_SOURCES})
     target_include_directories(warden_hardware PUBLIC include src/hardware ${GPIOD_INCLUDE})
     target_link_libraries(warden_hardware PUBLIC warden_core ${GPIOD_LIB})
+else()
+    add_library(warden_sim INTERFACE)
+    target_include_directories(warden_sim INTERFACE src/sim)
+    target_compile_definitions(warden_sim INTERFACE HARDWARE_DISABLED)
 endif()
 
 # ── Main executable ───────────────────────────────────────────────────────────
@@ -70,8 +76,7 @@ target_compile_definitions(warden PRIVATE WARDEN_VERSION="${PROJECT_VERSION}")
 if(ENABLE_HARDWARE)
     target_link_libraries(warden PRIVATE warden_core warden_hardware)
 else()
-    target_link_libraries(warden PRIVATE warden_core)
-    target_compile_definitions(warden PRIVATE HARDWARE_DISABLED)
+    target_link_libraries(warden PRIVATE warden_core warden_sim)
 endif()
 
 # ── Install rules ─────────────────────────────────────────────────────────────
@@ -81,6 +86,7 @@ install(FILES config/config.cfg DESTINATION etc/warden)
 # ── Packaging (CPack) ─────────────────────────────────────────────────────────
 set(CPACK_PACKAGE_NAME            "warden")
 set(CPACK_PACKAGE_VERSION         ${PROJECT_VERSION})
+set(CPACK_PACKAGE_FILE_NAME       "warden-${PROJECT_VERSION}-arm64")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Environmental monitor for Raspberry Pi")
 set(CPACK_GENERATOR               "TGZ")
 
@@ -89,6 +95,7 @@ if(ENABLE_HARDWARE)
     list(APPEND CPACK_GENERATOR "DEB")
     set(CPACK_DEBIAN_PACKAGE_MAINTAINER   "warden")
     set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "arm64")
+    set(CPACK_DEBIAN_FILE_NAME            DEB-DEFAULT)
     set(CPACK_DEBIAN_PACKAGE_DEPENDS      "libgpiod2")
     set(CPACK_DEBIAN_PACKAGE_DESCRIPTION
         "Monitors temperature and humidity via DHT22 on a Raspberry Pi.\n Signals state through built-in LEDs and a buzzer.")

@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Installs runtime dependencies on the Pi (run once after a fresh OS install).
+# ONE-TIME: Installs runtime dependencies on the Pi and enables the DHT22 kernel driver.
+# Safe to run multiple times — all steps are idempotent.
 #
 # Usage:
-#   tools/pi/bootstrap.sh
+#   tools/pi/02-bootstrap.sh
 
 : "${PI_USER:?PI_USER not set — copy .env.sample to .env and configure it.}"
 : "${PI_HOST:?PI_HOST not set — copy .env.sample to .env and configure it.}"
@@ -20,19 +21,13 @@ set -euo pipefail
 echo "==> Updating apt index"
 sudo apt-get update
 
-echo "==> Installing runtime + build dependencies"
+echo "==> Installing runtime dependencies"
 sudo apt-get install -y --no-install-recommends \
   ca-certificates \
   rsync \
   gdbserver \
   libgpiod3 \
-  libgpiod-dev \
   gpiod \
-  cmake \
-  ninja-build \
-  g++ \
-  git \
-  file \
   htop
 
 echo "==> Creating app directory"

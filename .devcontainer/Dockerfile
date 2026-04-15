@@ -17,6 +17,7 @@ RUN dpkg --add-architecture arm64 \
     ca-certificates \
     curl \
     openssh-client \
+    sshpass \
     rsync \
     file \
     gdb \
