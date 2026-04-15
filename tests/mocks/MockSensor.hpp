@@ -1,6 +1,6 @@
 #pragma once
 
-#include "warden/Sensor.hpp"
+#include "hardware/Sensor.hpp"
 
 #include <optional>
 

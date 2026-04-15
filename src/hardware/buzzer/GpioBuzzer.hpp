@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GpioPin.hpp"
-#include "warden/Buzzer.hpp"
+#include "hardware/Buzzer.hpp"
 
 #include <string>
 

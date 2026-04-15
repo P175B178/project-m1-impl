@@ -1,7 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "warden/Config.hpp"
-#include "warden/WardenApp.hpp"
+#include "Config.hpp"
+#include "WardenApp.hpp"
 
 #include "mocks/MockBuzzer.hpp"
 #include "mocks/MockLed.hpp"

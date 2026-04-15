@@ -1,7 +1,7 @@
 #pragma once
 
-#include "warden/Led.hpp"
-#include "warden/LedColor.hpp"
+#include "hardware/Led.hpp"
+#include "hardware/LedColor.hpp"
 
 #include <spdlog/spdlog.h>
 

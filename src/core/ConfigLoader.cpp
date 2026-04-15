@@ -1,4 +1,4 @@
-#include "warden/ConfigLoader.hpp"
+#include "ConfigLoader.hpp"
 
 #include <toml++/toml.hpp>
 

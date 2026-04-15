@@ -1,0 +1,6 @@
+InheritParentConfig: true
+Checks: >
+  -cppcoreguidelines-special-member-functions
+
+# Abstract interfaces only declare a virtual destructor — copy/move policy is
+# intentionally left to concrete implementations to decide.

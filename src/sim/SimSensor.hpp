@@ -1,7 +1,7 @@
 #pragma once
 
-#include "warden/Reading.hpp"
-#include "warden/Sensor.hpp"
+#include "hardware/Reading.hpp"
+#include "hardware/Sensor.hpp"
 
 #include <chrono>
 #include <cmath>

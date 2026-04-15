@@ -1,7 +1,7 @@
-#include "warden/WardenApp.hpp"
+#include "WardenApp.hpp"
 
-#include "warden/LedColor.hpp"
-#include "warden/State.hpp"
+#include "State.hpp"
+#include "hardware/LedColor.hpp"
 
 #include <spdlog/spdlog.h>
 #include <thread>

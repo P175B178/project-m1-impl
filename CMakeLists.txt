@@ -51,7 +51,10 @@ endif()
 file(GLOB_RECURSE CORE_SOURCES CONFIGURE_DEPENDS src/core/*.cpp)
 
 add_library(warden_core ${CORE_SOURCES})
-target_include_directories(warden_core PUBLIC include)
+target_include_directories(warden_core
+    PUBLIC  include        # hardware/ interfaces
+    PRIVATE src/core       # internal headers: Config, WardenApp, StateMachine, etc.
+)
 target_link_libraries(warden_core PUBLIC spdlog::spdlog tomlplusplus::tomlplusplus)
 
 # ── Hardware library (Raspberry Pi only) ─────────────────────────────────────
@@ -71,6 +74,7 @@ endif()
 
 # ── Main executable ───────────────────────────────────────────────────────────
 add_executable(warden src/main.cpp)
+target_include_directories(warden PRIVATE src/core)
 # Inject project version so --version can report it without hardcoding.
 target_compile_definitions(warden PRIVATE WARDEN_VERSION="${PROJECT_VERSION}")
 if(ENABLE_HARDWARE)

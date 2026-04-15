@@ -9,7 +9,10 @@ target_link_libraries(warden_tests PRIVATE
     Catch2::Catch2WithMain
 )
 
-target_include_directories(warden_tests PRIVATE ${CMAKE_SOURCE_DIR}/tests)
+target_include_directories(warden_tests PRIVATE
+    ${CMAKE_SOURCE_DIR}/tests
+    ${CMAKE_SOURCE_DIR}/src/core
+)
 
 include(Catch)
 catch_discover_tests(warden_tests)

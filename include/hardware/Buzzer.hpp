@@ -5,12 +5,7 @@ namespace warden {
 /// Abstract buzzer interface.
 class Buzzer {
 public:
-  Buzzer() = default;
   virtual ~Buzzer() = default;
-  Buzzer(const Buzzer &) = delete;
-  Buzzer &operator=(const Buzzer &) = delete;
-  Buzzer(Buzzer &&) = delete;
-  Buzzer &operator=(Buzzer &&) = delete;
 
   /// Emit a series of beeps.
   /// @param count      Number of beeps.

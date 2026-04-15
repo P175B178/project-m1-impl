@@ -1,6 +1,6 @@
 #pragma once
 
-#include "warden/Buzzer.hpp"
+#include "hardware/Buzzer.hpp"
 
 namespace warden::test {
 

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "warden/AveragingBuffer.hpp"
-#include "warden/Buzzer.hpp"
-#include "warden/Config.hpp"
-#include "warden/Led.hpp"
-#include "warden/Sensor.hpp"
-#include "warden/StateMachine.hpp"
+#include "AveragingBuffer.hpp"
+#include "Config.hpp"
+#include "StateMachine.hpp"
+#include "hardware/Buzzer.hpp"
+#include "hardware/Led.hpp"
+#include "hardware/Sensor.hpp"
 
 #include <atomic>
 
