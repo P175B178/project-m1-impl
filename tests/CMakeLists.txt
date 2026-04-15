@@ -1,7 +1,7 @@
 add_executable(warden_tests
     test_state_machine.cpp
     test_averaging.cpp
-    test_warden_app.cpp
+    test_transition.cpp
 )
 
 target_link_libraries(warden_tests PRIVATE
