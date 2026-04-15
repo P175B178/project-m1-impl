@@ -20,10 +20,10 @@ StatusLed::StatusLed() = default;
 
 StatusLed::~StatusLed() {
   stopBlinking();
-  clearPins();
+  clearColor();
 }
 
-void StatusLed::clearPins() {
+void StatusLed::clearColor() {
   act.setOff();
   pwr.setOff();
 }
@@ -58,7 +58,7 @@ void StatusLed::setMode(warden::LedColor color, bool blink) {
 
 void StatusLed::setOff() {
   stopBlinking();
-  clearPins();
+  clearColor();
 }
 
 void StatusLed::startBlinking(warden::LedColor color) {
@@ -72,13 +72,13 @@ void StatusLed::startBlinking(warden::LedColor color) {
       if (on) {
         applyColor(color);
       } else {
-        clearPins();
+        clearColor();
       }
       std::unique_lock lock{sleepMutex};
       sleepCv.wait_for(lock, stop, blinkPeriod / 2, [] { return false; });
       on = !on;
     }
-    clearPins();
+    clearColor();
     spdlog::debug("blink thread stopped");
   }};
 }
