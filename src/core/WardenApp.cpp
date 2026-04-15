@@ -1,7 +1,6 @@
 #include "WardenApp.hpp"
 
-#include "State.hpp"
-#include "hardware/LedColor.hpp"
+#include "Transition.hpp"
 
 #include <condition_variable>
 #include <mutex>
@@ -75,27 +74,7 @@ void WardenApp::processReading(const Reading &reading) {
   const auto transition = stateMachine.update({.temperature = avgTemp, .humidity = avgHum});
   if (transition) {
     spdlog::warn("State change: {} → {}", stateToString(transition->from), stateToString(transition->to));
-    applyTransition(*transition);
-  }
-}
-
-void WardenApp::applyTransition(const StateTransition &transition) {
-  switch (transition.to) {
-  case State::Normal:
-    led.setMode(LedColor::Green, false);
-    break;
-  case State::Warning:
-    led.setMode(LedColor::Orange, false);
-    break;
-  case State::Alert:
-    led.setMode(LedColor::Red, true);
-    break;
-  }
-
-  if (transition.to == State::Alert) {
-    buzzer.shortBeep(3); // NOLINT(readability-magic-numbers)
-  } else if (transition.from == State::Alert) {
-    buzzer.longBeep(1); // NOLINT(readability-magic-numbers)
+    applyTransition(led, buzzer, transition.value());
   }
 }
 

@@ -38,9 +38,6 @@ public:
   /// Sets the LED to green on entry, turns it off on exit.
   void run(std::stop_token stopToken);
 
-  /// Apply the LED and buzzer reaction for a state transition.
-  void applyTransition(const StateTransition &transition);
-
 private:
   Sensor &sensor;
   Led &led;
