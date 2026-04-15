@@ -33,10 +33,6 @@ public:
 
   [[nodiscard]] State currentState() const noexcept { return state; }
 
-  // Thresholds can be updated at runtime to support future remote reconfiguration.
-  void setTemperatureThreshold(float threshold) noexcept { temperatureThreshold = threshold; }
-  void setHumidityThreshold(float threshold) noexcept { humidityThreshold = threshold; }
-
 private:
   [[nodiscard]] State evaluate(Sample sample) const noexcept;
 

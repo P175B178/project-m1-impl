@@ -37,7 +37,11 @@ static CliArgs parseCli(int argc, char *argv[]) {
   app.set_version_flag("-v,--version", std::string{WARDEN_VERSION});
   app.add_option("-c,--config", args.configPath, "Config file")->capture_default_str();
 
-  CLI11_PARSE(app, argc, argv);
+  try {
+    app.parse(argc, argv);
+  } catch (const CLI::ParseError &e) {
+    std::exit(app.exit(e));
+  }
   return args;
 }
 
@@ -56,6 +60,8 @@ int main(int argc, char *argv[]) {
   spdlog::info("Temp threshold: {:.1f}°C, humidity threshold: {:.1f}%", config.temperatureThreshold,
                config.humidityThreshold);
   spdlog::info("Read interval: {}s, averaging window: {} samples", config.readInterval.count(), config.averagingWindow);
+  spdlog::info("Sensor validation — temp: [{:.1f}, {:.1f}]°C  humidity: [{:.1f}, {:.1f}]%",
+               config.minTemperature, config.maxTemperature, config.minHumidity, config.maxHumidity);
 
 #ifdef HARDWARE_DISABLED
   std::puts("\n"

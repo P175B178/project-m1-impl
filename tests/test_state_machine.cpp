@@ -84,11 +84,3 @@ TEST(StateMachine, ValuesExactlyAtThresholdAreNotExceeded) {
     EXPECT_FALSE(t.has_value());
     EXPECT_EQ(sm.currentState(), State::Normal);
 }
-
-TEST(StateMachine, ThresholdsCanBeUpdatedAtRuntime) {
-    StateMachine sm{tempThreshold, humThreshold};
-    sm.setTemperatureThreshold(25.0F);
-    auto t = sm.update({.temperature = 26.0F, .humidity = 50.0F});  // now exceeds new threshold
-    ASSERT_TRUE(t.has_value());
-    EXPECT_EQ(t->to, State::Warning);
-}

@@ -10,7 +10,7 @@
 namespace warden::sim {
 
 /// Simulated sensor that produces a slowly oscillating sine-wave signal.
-/// Temperature crosses the default 28 °C threshold, humidity crosses 50 %,
+/// Temperature crosses the default 28 °C threshold, humidity crosses 70 %,
 /// so the full state-machine and alert path is exercised without hardware.
 class SimSensor final : public Sensor {
 public:
