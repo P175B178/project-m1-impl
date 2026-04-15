@@ -19,9 +19,9 @@ struct RequestConfigDeleter {
 };
 
 GpioPin::GpioPin(const std::string &chipPath, unsigned int lineOffset, const std::string &consumer)
-    : offset_{lineOffset} {
-  chip_ = gpiod_chip_open(chipPath.c_str());
-  if (!chip_) {
+    : offset{lineOffset} {
+  chip = gpiod_chip_open(chipPath.c_str());
+  if (!chip) {
     throw std::runtime_error{"Cannot open GPIO chip: " + chipPath};
   }
 
@@ -44,23 +44,23 @@ GpioPin::GpioPin(const std::string &chipPath, unsigned int lineOffset, const std
   }
   gpiod_request_config_set_consumer(reqConfig.get(), consumer.c_str());
 
-  request_ = gpiod_chip_request_lines(chip_, reqConfig.get(), lineConfig.get());
-  if (!request_) {
+  request = gpiod_chip_request_lines(chip, reqConfig.get(), lineConfig.get());
+  if (!request) {
     throw std::runtime_error{"Cannot request GPIO line " + std::to_string(lineOffset)};
   }
 }
 
 GpioPin::~GpioPin() {
-  if (request_) {
-    gpiod_line_request_release(request_);
+  if (request) {
+    gpiod_line_request_release(request);
   }
-  if (chip_) {
-    gpiod_chip_close(chip_);
+  if (chip) {
+    gpiod_chip_close(chip);
   }
 }
 
-void GpioPin::setHigh() { gpiod_line_request_set_value(request_, offset_, GPIOD_LINE_VALUE_ACTIVE); }
+void GpioPin::setHigh() { gpiod_line_request_set_value(request, offset, GPIOD_LINE_VALUE_ACTIVE); }
 
-void GpioPin::setLow() { gpiod_line_request_set_value(request_, offset_, GPIOD_LINE_VALUE_INACTIVE); }
+void GpioPin::setLow() { gpiod_line_request_set_value(request, offset, GPIOD_LINE_VALUE_INACTIVE); }
 
 } // namespace warden::hardware

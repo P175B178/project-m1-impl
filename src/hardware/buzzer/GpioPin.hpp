@@ -26,9 +26,9 @@ public:
   void setLow();
 
 private:
-  gpiod_chip *chip_{nullptr};
-  gpiod_line_request *request_{nullptr};
-  unsigned int offset_{0};
+  gpiod_chip *chip{nullptr};
+  gpiod_line_request *request{nullptr};
+  unsigned int offset{0};
 };
 
 } // namespace warden::hardware

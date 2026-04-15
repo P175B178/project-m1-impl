@@ -19,8 +19,8 @@ StatusLed::StatusLed() = default;
 
 StatusLed::~StatusLed() {
   stopBlinking();
-  act_.setOff();
-  pwr_.setOff();
+  act.setOff();
+  pwr.setOff();
 }
 
 void StatusLed::setMode(warden::LedColor color, bool blink) {
@@ -31,16 +31,16 @@ void StatusLed::setMode(warden::LedColor color, bool blink) {
 
   switch (color) {
   case warden::LedColor::Green:
-    act_.setOn();
-    pwr_.setOff();
+    act.setOn();
+    pwr.setOff();
     break;
   case warden::LedColor::Orange:
-    act_.setOn();
-    pwr_.setOn();
+    act.setOn();
+    pwr.setOn();
     break;
   case warden::LedColor::Red:
-    act_.setOff();
-    pwr_.setOn();
+    act.setOff();
+    pwr.setOn();
     break;
   }
 
@@ -51,36 +51,36 @@ void StatusLed::setMode(warden::LedColor color, bool blink) {
 
 void StatusLed::setOff() {
   stopBlinking();
-  act_.setOff();
-  pwr_.setOff();
+  act.setOff();
+  pwr.setOff();
 }
 
 void StatusLed::startBlinking() {
   // condition_variable_any + stop_token lets the thread wake immediately
   // on shutdown rather than sleeping for up to half a period.
-  blinkThread_ = std::jthread{[this](std::stop_token stop) {
+  blinkThread = std::jthread{[this](std::stop_token stop) {
     spdlog::debug("blink thread started");
     while (!stop.stop_requested()) {
       spdlog::debug("blink: on");
-      pwr_.setOn();
+      pwr.setOn();
       std::this_thread::sleep_for(blinkPeriod / 2);
       if (stop.stop_requested()) {
         break;
       }
       spdlog::debug("blink: off");
-      pwr_.setOff();
+      pwr.setOff();
       std::this_thread::sleep_for(blinkPeriod / 2);
     }
-    pwr_.setOff();
+    pwr.setOff();
     spdlog::debug("blink thread stopped");
   }};
 }
 
 void StatusLed::stopBlinking() {
-  if (blinkThread_.joinable()) {
+  if (blinkThread.joinable()) {
     spdlog::debug("StatusLed: stopping blink thread");
-    blinkThread_.request_stop();
-    blinkThread_.join();
+    blinkThread.request_stop();
+    blinkThread.join();
   }
 }
 

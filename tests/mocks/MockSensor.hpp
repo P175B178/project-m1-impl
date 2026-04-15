@@ -11,23 +11,23 @@ namespace warden::test {
 class MockSensor : public Sensor {
 public:
     void setNextReading(Reading r) {
-        nextReading_ = r;
-        nextError_   = std::nullopt;
+        nextReading = r;
+        nextError   = std::nullopt;
     }
 
     void setNextError(SensorError e) {
-        nextError_   = e;
-        nextReading_ = std::nullopt;
+        nextError   = e;
+        nextReading = std::nullopt;
     }
 
     [[nodiscard]] std::expected<Reading, SensorError> read() const override {
-        if (nextError_) return std::unexpected{*nextError_};
-        return nextReading_.value_or(Reading{20.0f, 50.0f, {}});
+        if (nextError) { return std::unexpected{*nextError}; }
+        return nextReading.value_or(Reading{.temperature = 20.0F, .humidity = 50.0F, .timestamp = {}});
     }
 
 private:
-    std::optional<Reading>     nextReading_{Reading{20.0f, 50.0f, {}}};
-    std::optional<SensorError> nextError_;
+    std::optional<Reading>     nextReading{Reading{.temperature = 20.0F, .humidity = 50.0F, .timestamp = {}}};
+    std::optional<SensorError> nextError;
 };
 
 } // namespace warden::test

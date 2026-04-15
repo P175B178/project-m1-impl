@@ -17,16 +17,16 @@ constexpr unsigned int kGpioPin = 17;
 
 namespace warden::hardware {
 
-GpioBuzzer::GpioBuzzer(const std::string &chipPath) : pin_{chipPath, kGpioPin, "buzzer"} {}
+GpioBuzzer::GpioBuzzer(const std::string &chipPath) : pin{chipPath, kGpioPin, "buzzer"} {}
 
 void GpioBuzzer::beep(int count, int durationMs, int pauseMs) {
   spdlog::debug("GpioBuzzer: beep count={} duration={}ms pause={}ms", count, durationMs, pauseMs);
   for (int i = 0; i < count; ++i) {
     const auto end = std::chrono::steady_clock::now() + std::chrono::milliseconds{durationMs};
     while (std::chrono::steady_clock::now() < end) {
-      pin_.setHigh();
+      pin.setHigh();
       std::this_thread::sleep_for(tonePeriod / 2);
-      pin_.setLow();
+      pin.setLow();
       std::this_thread::sleep_for(tonePeriod / 2);
     }
     if (i < count - 1) {

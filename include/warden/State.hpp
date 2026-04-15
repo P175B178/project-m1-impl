@@ -1,10 +1,11 @@
 #pragma once
 
+#include <cstdint>
 #include <string_view>
 
 namespace warden {
 
-enum class State {
+enum class State : std::uint8_t {
   Normal,  ///< No threshold exceeded
   Warning, ///< Exactly one threshold exceeded
   Alert    ///< Both thresholds exceeded

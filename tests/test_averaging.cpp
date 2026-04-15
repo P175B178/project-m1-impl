@@ -18,55 +18,55 @@ TEST_CASE("AveragingBuffer — empty buffer returns nullopt", "[averaging]") {
 
 TEST_CASE("AveragingBuffer — single value average returns that value", "[averaging]") {
     AveragingBuffer<float> buf{5};
-    buf.push(23.4f);
-    REQUIRE(buf.average().value() == Approx(23.4f));
+    buf.push(23.4F);
+    REQUIRE(buf.average().value() == Approx(23.4F));
 }
 
 TEST_CASE("AveragingBuffer — average of multiple values is correct", "[averaging]") {
     AveragingBuffer<float> buf{4};
-    buf.push(10.0f);
-    buf.push(20.0f);
-    buf.push(30.0f);
-    buf.push(40.0f);
-    REQUIRE(buf.average().value() == Approx(25.0f));
+    buf.push(10.0F);
+    buf.push(20.0F);
+    buf.push(30.0F);
+    buf.push(40.0F);
+    REQUIRE(buf.average().value() == Approx(25.0F));
 }
 
 TEST_CASE("AveragingBuffer — old values are evicted once full", "[averaging]") {
     AveragingBuffer<float> buf{3};
-    buf.push(10.0f);
-    buf.push(10.0f);
-    buf.push(10.0f);
-    buf.push(40.0f);  // evicts first 10.0
+    buf.push(10.0F);
+    buf.push(10.0F);
+    buf.push(10.0F);
+    buf.push(40.0F);  // evicts first 10.0
     // window: [10, 10, 40] → average = 20
-    REQUIRE(buf.average().value() == Approx(20.0f));
+    REQUIRE(buf.average().value() == Approx(20.0F));
 }
 
 TEST_CASE("AveragingBuffer — size and full flags are correct", "[averaging]") {
     AveragingBuffer<float> buf{3};
     REQUIRE(buf.empty());
-    REQUIRE(buf.size() == 0);
+    REQUIRE(buf.empty());
 
-    buf.push(1.0f);
+    buf.push(1.0F);
     REQUIRE_FALSE(buf.empty());
     REQUIRE_FALSE(buf.full());
     REQUIRE(buf.size() == 1);
 
-    buf.push(2.0f);
-    buf.push(3.0f);
+    buf.push(2.0F);
+    buf.push(3.0F);
     REQUIRE(buf.full());
     REQUIRE(buf.size() == 3);
 
-    buf.push(4.0f);  // buffer wraps — still full, still size 3
+    buf.push(4.0F);  // buffer wraps — still full, still size 3
     REQUIRE(buf.full());
     REQUIRE(buf.size() == 3);
 }
 
 TEST_CASE("AveragingBuffer — capacity of 1 always returns last pushed value", "[averaging]") {
     AveragingBuffer<float> buf{1};
-    buf.push(10.0f);
-    REQUIRE(buf.average().value() == Approx(10.0f));
-    buf.push(99.0f);
-    REQUIRE(buf.average().value() == Approx(99.0f));
+    buf.push(10.0F);
+    REQUIRE(buf.average().value() == Approx(10.0F));
+    buf.push(99.0F);
+    REQUIRE(buf.average().value() == Approx(99.0F));
 }
 
 TEST_CASE("AveragingBuffer — works with integer types", "[averaging]") {

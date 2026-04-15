@@ -12,15 +12,15 @@ struct Config {
   std::size_t averagingWindow{10};
 
   // Thresholds
-  float temperatureThreshold{28.0f};
-  float humidityThreshold{70.0f};
+  float temperatureThreshold{28.0F};
+  float humidityThreshold{70.0F};
 
   // Sensor validation bounds — readings outside these are rejected as
   // implausible before entering the averaging buffer.
-  float minTemperature{-40.0f};
-  float maxTemperature{80.0f};
-  float minHumidity{0.0f};
-  float maxHumidity{100.0f};
+  float minTemperature{-40.0F};
+  float maxTemperature{80.0F};
+  float minHumidity{0.0F};
+  float maxHumidity{100.0F};
 };
 
 } // namespace warden

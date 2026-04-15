@@ -24,18 +24,18 @@ public:
   /// the state changed, std::nullopt if it stayed the same.
   [[nodiscard]] std::optional<StateTransition> update(float temperature, float humidity);
 
-  [[nodiscard]] State currentState() const noexcept { return state_; }
+  [[nodiscard]] State currentState() const noexcept { return state; }
 
   // Thresholds can be updated at runtime to support future remote reconfiguration.
-  void setTemperatureThreshold(float t) noexcept { temperatureThreshold_ = t; }
-  void setHumidityThreshold(float h) noexcept { humidityThreshold_ = h; }
+  void setTemperatureThreshold(float t) noexcept { temperatureThreshold = t; }
+  void setHumidityThreshold(float h) noexcept { humidityThreshold = h; }
 
 private:
   [[nodiscard]] State evaluate(float temperature, float humidity) const noexcept;
 
-  float temperatureThreshold_;
-  float humidityThreshold_;
-  State state_{State::Normal};
+  float temperatureThreshold;
+  float humidityThreshold;
+  State state{State::Normal};
 };
 
 } // namespace warden

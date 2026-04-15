@@ -30,21 +30,21 @@ public:
   /// @param minHumidity    Validation lower bound in %
   /// @param maxHumidity    Validation upper bound in %
   explicit Dht22Sensor(std::string sysfsBasePath,
-                       float minTemperature = -40.0f,
-                       float maxTemperature = 80.0f,
-                       float minHumidity = 0.0f,
-                       float maxHumidity = 100.0f);
+                       float minTemperature = -40.0F,
+                       float maxTemperature = 80.0F,
+                       float minHumidity = 0.0F,
+                       float maxHumidity = 100.0F);
 
   [[nodiscard]] std::expected<warden::Reading, warden::SensorError> read() const override;
 
 private:
   [[nodiscard]] std::expected<float, warden::SensorError> readSysfsValue(const std::string &path, float scale) const;
 
-  std::string sysfsBasePath_;
-  float minTemperature_;
-  float maxTemperature_;
-  float minHumidity_;
-  float maxHumidity_;
+  std::string sysfsBasePath;
+  float minTemperature;
+  float maxTemperature;
+  float minHumidity;
+  float maxHumidity;
 };
 
 } // namespace warden::hardware

@@ -30,8 +30,8 @@ public:
 private:
   static void writeFile(const std::string &path, const char *value) noexcept;
 
-  std::string basePath_; // /sys/class/leds/<name>
-  bool inverted_;
+  std::string basePath; // /sys/class/leds/<name>
+  bool inverted;
 };
 
 } // namespace warden::hardware

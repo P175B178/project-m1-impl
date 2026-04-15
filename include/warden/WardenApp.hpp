@@ -28,14 +28,14 @@ public:
   void applyTransition(const StateTransition &transition);
 
 private:
-  Sensor &sensor_;
-  Led &led_;
-  Buzzer &buzzer_;
-  const Config &config_;
+  Sensor *sensor;
+  Led *led;
+  Buzzer *buzzer;
+  const Config *config;
 
-  StateMachine stateMachine_;
-  AveragingBuffer<float> tempBuffer_;
-  AveragingBuffer<float> humBuffer_;
+  StateMachine stateMachine;
+  AveragingBuffer<float> tempBuffer;
+  AveragingBuffer<float> humBuffer;
 };
 
 } // namespace warden

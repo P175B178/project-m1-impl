@@ -10,27 +10,27 @@ namespace warden::hardware {
 
 Dht22Sensor::Dht22Sensor(
     std::string sysfsBasePath, float minTemperature, float maxTemperature, float minHumidity, float maxHumidity)
-    : sysfsBasePath_{std::move(sysfsBasePath)}, minTemperature_{minTemperature}, maxTemperature_{maxTemperature},
-      minHumidity_{minHumidity}, maxHumidity_{maxHumidity} {}
+    : sysfsBasePath{std::move(sysfsBasePath)}, minTemperature{minTemperature}, maxTemperature{maxTemperature},
+      minHumidity{minHumidity}, maxHumidity{maxHumidity} {}
 
 std::expected<warden::Reading, warden::SensorError> Dht22Sensor::read() const {
   // Kernel IIO driver returns temperature in millidegrees C (scale: 0.001)
-  auto temp = readSysfsValue(sysfsBasePath_ + "/in_temp_input", 0.001f);
+  auto temp = readSysfsValue(sysfsBasePath + "/in_temp_input", 0.001F);
   if (!temp) {
     return std::unexpected{temp.error()};
   }
 
   // Humidity in 0.001 % (scale: 0.001)
-  auto hum = readSysfsValue(sysfsBasePath_ + "/in_humidityrelative_input", 0.001f);
+  auto hum = readSysfsValue(sysfsBasePath + "/in_humidityrelative_input", 0.001F);
   if (!hum) {
     return std::unexpected{hum.error()};
   }
 
   // Validate plausible physical ranges
-  if (*temp < minTemperature_ || *temp > maxTemperature_) {
+  if (*temp < minTemperature || *temp > maxTemperature) {
     return std::unexpected{warden::SensorError::InvalidData};
   }
-  if (*hum < minHumidity_ || *hum > maxHumidity_) {
+  if (*hum < minHumidity || *hum > maxHumidity) {
     return std::unexpected{warden::SensorError::InvalidData};
   }
 

@@ -10,25 +10,25 @@ namespace warden::test {
 class MockLed : public Led {
 public:
     void setMode(LedColor color, bool blink = false) override {
-        lastColor_ = color;
-        lastBlink_ = blink;
-        isOff_     = false;
+        lastColor = color;
+        lastBlink = blink;
+        off       = false;
     }
 
     void setOff() override {
-        isOff_     = true;
-        lastColor_ = std::nullopt;
-        lastBlink_ = false;
+        off       = true;
+        lastColor = std::nullopt;
+        lastBlink = false;
     }
 
-    [[nodiscard]] std::optional<LedColor> lastColor() const noexcept { return lastColor_; }
-    [[nodiscard]] bool lastBlink() const noexcept { return lastBlink_; }
-    [[nodiscard]] bool isOff()     const noexcept { return isOff_; }
+    [[nodiscard]] std::optional<LedColor> getLastColor() const noexcept { return lastColor; }
+    [[nodiscard]] bool getLastBlink() const noexcept { return lastBlink; }
+    [[nodiscard]] bool isOff()        const noexcept { return off; }
 
 private:
-    std::optional<LedColor> lastColor_;
-    bool                    lastBlink_{false};
-    bool                    isOff_{false};
+    std::optional<LedColor> lastColor;
+    bool                    lastBlink{false};
+    bool                    off{false};
 };
 
 } // namespace warden::test

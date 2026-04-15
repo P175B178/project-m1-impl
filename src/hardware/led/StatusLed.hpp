@@ -36,9 +36,9 @@ private:
   void startBlinking();
   void stopBlinking();
 
-  SysfsLed act_{"ACT", /*inverted=*/true};  // green
-  SysfsLed pwr_{"PWR", /*inverted=*/false}; // red
-  std::jthread blinkThread_;
+  SysfsLed act{"ACT", /*inverted=*/true};  // green
+  SysfsLed pwr{"PWR", /*inverted=*/false}; // red
+  std::jthread blinkThread;
 };
 
 } // namespace warden::hardware

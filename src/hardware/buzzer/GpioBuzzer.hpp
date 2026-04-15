@@ -17,7 +17,7 @@ public:
   void beep(int count, int durationMs, int pauseMs) override;
 
 private:
-  GpioPin pin_;
+  GpioPin pin;
 };
 
 } // namespace warden::hardware

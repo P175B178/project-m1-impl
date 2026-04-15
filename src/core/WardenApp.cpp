@@ -9,58 +9,61 @@
 namespace warden {
 
 WardenApp::WardenApp(Sensor &sensor, Led &led, Buzzer &buzzer, const Config &config)
-    : sensor_{sensor}, led_{led}, buzzer_{buzzer}, config_{config},
-      stateMachine_{config.temperatureThreshold, config.humidityThreshold}, tempBuffer_{config.averagingWindow},
-      humBuffer_{config.averagingWindow} {}
+    : sensor{&sensor}, led{&led}, buzzer{&buzzer}, config{&config},
+      stateMachine{config.temperatureThreshold, config.humidityThreshold}, tempBuffer{config.averagingWindow},
+      humBuffer{config.averagingWindow} {}
 
 void WardenApp::run(const std::atomic<bool> &running) {
-  led_.setMode(LedColor::Green);
+  led->setMode(LedColor::Green);
 
   while (running) {
-    const auto result = sensor_.read();
+    const auto result = sensor->read();
 
     if (!result) {
       spdlog::warn("Sensor read failed — skipping sample");
     } else {
-      tempBuffer_.push(result->temperature);
-      humBuffer_.push(result->humidity);
+      tempBuffer.push(result->temperature);
+      humBuffer.push(result->humidity);
 
-      const float avgTemp = tempBuffer_.average().value();
-      const float avgHum = humBuffer_.average().value();
+      // Safe: push() above guarantees count > 0, so average() always returns a value here.
+      // NOLINTBEGIN(bugprone-unchecked-optional-access)
+      const float avgTemp = tempBuffer.average().value();
+      const float avgHum = humBuffer.average().value();
+      // NOLINTEND(bugprone-unchecked-optional-access)
 
       spdlog::info("temp={:.1f}°C (raw={:.1f})  hum={:.1f}% (raw={:.1f})  state={}", avgTemp, result->temperature,
-                   avgHum, result->humidity, stateToString(stateMachine_.currentState()));
+                   avgHum, result->humidity, stateToString(stateMachine.currentState()));
 
-      const auto transition = stateMachine_.update(avgTemp, avgHum);
+      const auto transition = stateMachine.update(avgTemp, avgHum);
       if (transition) {
         spdlog::warn("State change: {} → {}", stateToString(transition->from), stateToString(transition->to));
         applyTransition(*transition);
       }
     }
 
-    std::this_thread::sleep_for(config_.readInterval);
+    std::this_thread::sleep_for(config->readInterval);
   }
 
-  led_.setOff();
+  led->setOff();
 }
 
 void WardenApp::applyTransition(const StateTransition &t) {
   switch (t.to) {
   case State::Normal:
-    led_.setMode(LedColor::Green, false);
+    led->setMode(LedColor::Green, false);
     break;
   case State::Warning:
-    led_.setMode(LedColor::Orange, false);
+    led->setMode(LedColor::Orange, false);
     break;
   case State::Alert:
-    led_.setMode(LedColor::Red, true);
+    led->setMode(LedColor::Red, true);
     break;
   }
 
   if (t.to == State::Alert) {
-    buzzer_.beep(3, 100, 100); // three short beeps on entering Alert
+    buzzer->beep(3, 100, 100); // three short beeps on entering Alert
   } else if (t.from == State::Alert) {
-    buzzer_.beep(1, 500, 0); // one long beep on leaving Alert
+    buzzer->beep(1, 500, 0); // one long beep on leaving Alert
   }
 }
 
