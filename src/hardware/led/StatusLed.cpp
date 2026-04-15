@@ -57,23 +57,16 @@ void StatusLed::setOff() {
 }
 
 void StatusLed::startBlinking() {
-  // condition_variable_any + stop_token lets the thread wake immediately
-  // on shutdown rather than sleeping for up to half a period.
   blinkThread = std::jthread{[this](std::stop_token stop) {
     std::mutex sleepMutex;
     std::condition_variable_any sleepCv;
+    bool on = true;
     spdlog::debug("blink thread started");
     while (!stop.stop_requested()) {
-      spdlog::debug("blink: on");
-      pwr.setOn();
+      on ? pwr.setOn() : pwr.setOff();
       std::unique_lock lock{sleepMutex};
       sleepCv.wait_for(lock, stop, blinkPeriod / 2, [] { return false; });
-      if (stop.stop_requested()) {
-        break;
-      }
-      spdlog::debug("blink: off");
-      pwr.setOff();
-      sleepCv.wait_for(lock, stop, blinkPeriod / 2, [] { return false; });
+      on = !on;
     }
     pwr.setOff();
     spdlog::debug("blink thread stopped");
