@@ -63,6 +63,7 @@ void StatusLed::startBlinking() {
     bool on = true;
     spdlog::debug("blink thread started");
     while (!stop.stop_requested()) {
+      spdlog::debug("blink: {}", on ? "on" : "off");
       on ? pwr.setOn() : pwr.setOff();
       std::unique_lock lock{sleepMutex};
       sleepCv.wait_for(lock, stop, blinkPeriod / 2, [] { return false; });
