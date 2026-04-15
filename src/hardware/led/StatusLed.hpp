@@ -15,7 +15,7 @@ namespace warden::hardware {
 ///   Orange → ACT on,  PWR on
 ///   Red    → ACT off, PWR on
 ///
-/// When blink=true, a background thread toggles PWR at 1 Hz.
+/// When blink=true, a background thread toggles all active pins at 1 Hz.
 ///
 /// Non-copyable and non-movable because the instance owns exclusive control
 /// of hardware resources — two instances driving the same LEDs would conflict.
@@ -33,7 +33,8 @@ public:
   void setOff() override;
 
 private:
-  void startBlinking();
+  void applyColor(warden::LedColor color);
+  void startBlinking(warden::LedColor color);
   void stopBlinking();
 
   SysfsLed act{"ACT", /*inverted=*/true};  // green
