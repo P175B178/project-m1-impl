@@ -1,3 +1,2 @@
 .clang-tidy
 tests/.clang-tidy
-include/hardware/.clang-tidy
