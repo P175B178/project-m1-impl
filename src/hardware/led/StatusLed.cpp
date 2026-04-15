@@ -3,6 +3,7 @@
 #include <chrono>
 #include <condition_variable>
 #include <mutex>
+#include <stop_token>
 #include <thread>
 
 #include <spdlog/spdlog.h>
@@ -59,17 +60,20 @@ void StatusLed::startBlinking() {
   // condition_variable_any + stop_token lets the thread wake immediately
   // on shutdown rather than sleeping for up to half a period.
   blinkThread = std::jthread{[this](std::stop_token stop) {
+    std::mutex sleepMutex;
+    std::condition_variable_any sleepCv;
     spdlog::debug("blink thread started");
     while (!stop.stop_requested()) {
       spdlog::debug("blink: on");
       pwr.setOn();
-      std::this_thread::sleep_for(blinkPeriod / 2);
+      std::unique_lock lock{sleepMutex};
+      sleepCv.wait_for(lock, stop, blinkPeriod / 2, [] { return false; });
       if (stop.stop_requested()) {
         break;
       }
       spdlog::debug("blink: off");
       pwr.setOff();
-      std::this_thread::sleep_for(blinkPeriod / 2);
+      sleepCv.wait_for(lock, stop, blinkPeriod / 2, [] { return false; });
     }
     pwr.setOff();
     spdlog::debug("blink thread stopped");
