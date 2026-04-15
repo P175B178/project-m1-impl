@@ -29,6 +29,14 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(tomlplusplus)
 
+FetchContent_Declare(
+    CLI11
+    GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
+    GIT_TAG        v2.4.2
+    FIND_PACKAGE_ARGS
+)
+FetchContent_MakeAvailable(CLI11)
+
 if(BUILD_TESTING)
     FetchContent_Declare(
         googletest
@@ -78,9 +86,9 @@ target_include_directories(warden PRIVATE src/core)
 # Inject project version so --version can report it without hardcoding.
 target_compile_definitions(warden PRIVATE WARDEN_VERSION="${PROJECT_VERSION}")
 if(ENABLE_HARDWARE)
-    target_link_libraries(warden PRIVATE warden_core warden_hardware)
+    target_link_libraries(warden PRIVATE warden_core warden_hardware CLI11::CLI11)
 else()
-    target_link_libraries(warden PRIVATE warden_core warden_sim)
+    target_link_libraries(warden PRIVATE warden_core warden_sim CLI11::CLI11)
 endif()
 
 # ── Install rules ─────────────────────────────────────────────────────────────

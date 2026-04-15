@@ -1,13 +1,11 @@
 #include "ConfigLoader.hpp"
 #include "WardenApp.hpp"
 
+#include <CLI/CLI.hpp>
 #include <spdlog/spdlog.h>
 
-#include <array>
 #include <csignal>
 #include <cstdlib>
-#include <getopt.h>
-#include <print>
 #include <stop_token>
 #include <string>
 
@@ -28,57 +26,33 @@ void onSignal(int /*signal*/) { appStop.request_stop(); }
 } // namespace
 
 // ── CLI ────────────────────────────────────────────────────────────────────
-static void printHelp(const char *argv0) {
-  std::println("Usage: {} [options]\n"
-               "\n"
-               "Options:\n"
-               "  -c, --config <path>   Config file (default: /etc/warden/config.cfg)\n"
-               "  -v, --version         Print version and exit\n"
-               "  -h, --help            Print this help and exit",
-               argv0);
+struct CliArgs {
+  std::string configPath{"/etc/warden/config.cfg"};
+};
+
+static CliArgs parseCli(int argc, char *argv[]) {
+  CliArgs args;
+
+  CLI::App app{"Warden — environmental monitor", "warden"};
+  app.set_version_flag("-v,--version", std::string{WARDEN_VERSION});
+  app.add_option("-c,--config", args.configPath, "Config file")->capture_default_str();
+
+  CLI11_PARSE(app, argc, argv);
+  return args;
 }
 
-static void printVersion() { std::println("warden {}", WARDEN_VERSION); }
-
 // ── Entry point ────────────────────────────────────────────────────────────
-int main(int argc, char *argv[]) { // NOLINT(bugprone-exception-escape)
-  std::string configPath{"/etc/warden/config.cfg"};
+int main(int argc, char *argv[]) {
+  const auto args = parseCli(argc, argv);
 
-  static const std::array<option, 4> longOpts{{
-      {.name = "config", .has_arg = required_argument, .flag = nullptr, .val = 'c'},
-      {.name = "version", .has_arg = no_argument, .flag = nullptr, .val = 'v'},
-      {.name = "help", .has_arg = no_argument, .flag = nullptr, .val = 'h'},
-      {.name = nullptr, .has_arg = 0, .flag = nullptr, .val = 0},
-  }};
-
-  int opt = 0;
-  // NOLINTBEGIN(cppcoreguidelines-pro-bounds-array-to-pointer-decay, cppcoreguidelines-pro-bounds-pointer-arithmetic)
-  while ((opt = getopt_long(argc, argv, "c:vh", longOpts.data(), nullptr)) != -1) {
-    switch (opt) {
-    case 'c':
-      configPath = optarg;
-      break;
-    case 'v':
-      printVersion();
-      return EXIT_SUCCESS;
-    case 'h':
-      printHelp(argv[0]);
-      return EXIT_SUCCESS;
-    default:
-      printHelp(argv[0]);
-      return EXIT_FAILURE;
-    }
-  }
-  // NOLINTEND(cppcoreguidelines-pro-bounds-array-to-pointer-decay, cppcoreguidelines-pro-bounds-pointer-arithmetic)
-
-  const auto configResult = warden::ConfigLoader::load(configPath);
+  const auto configResult = warden::ConfigLoader::load(args.configPath);
   if (!configResult) {
-    spdlog::error("Failed to load config '{}': {}", configPath, configResult.error());
+    spdlog::error("Failed to load config '{}': {}", args.configPath, configResult.error());
     return EXIT_FAILURE;
   }
   const auto &config = *configResult;
 
-  spdlog::info("Warden {} starting — config: {}", WARDEN_VERSION, configPath);
+  spdlog::info("Warden {} starting — config: {}", WARDEN_VERSION, args.configPath);
   spdlog::info("Temp threshold: {:.1f}°C, humidity threshold: {:.1f}%", config.temperatureThreshold,
                config.humidityThreshold);
   spdlog::info("Read interval: {}s, averaging window: {} samples", config.readInterval.count(), config.averagingWindow);
@@ -115,3 +89,4 @@ int main(int argc, char *argv[]) { // NOLINT(bugprone-exception-escape)
   spdlog::info("Shutting down");
   return EXIT_SUCCESS;
 }
+
