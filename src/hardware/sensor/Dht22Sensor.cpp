@@ -10,31 +10,37 @@ namespace warden::hardware {
 
 Dht22Sensor::Dht22Sensor(
     std::string sysfsBasePath, float minTemperature, float maxTemperature, float minHumidity, float maxHumidity)
-    : sysfsBasePath{std::move(sysfsBasePath)}, minTemperature{minTemperature}, maxTemperature{maxTemperature},
-      minHumidity{minHumidity}, maxHumidity{maxHumidity} {}
+      : sysfsBasePath{std::move(sysfsBasePath)}
+      , minTemperature{minTemperature}
+      , maxTemperature{maxTemperature}
+      , minHumidity{minHumidity}
+      , maxHumidity{maxHumidity} {}
 
 std::expected<warden::Reading, warden::SensorError> Dht22Sensor::read() const {
   // Kernel IIO driver returns temperature in millidegrees C (scale: 0.001)
-  auto temp = readSysfsValue(sysfsBasePath + "/in_temp_input", 0.001F);
-  if (!temp) {
-    return std::unexpected{temp.error()};
+  const auto tempResult = readSysfsValue(sysfsBasePath + "/in_temp_input", 0.001F);
+  if (!tempResult) {
+    return std::unexpected{tempResult.error()};
   }
+  const float temperature = tempResult.value();
 
   // Humidity in 0.001 % (scale: 0.001)
-  auto hum = readSysfsValue(sysfsBasePath + "/in_humidityrelative_input", 0.001F);
-  if (!hum) {
-    return std::unexpected{hum.error()};
+  const auto humResult = readSysfsValue(sysfsBasePath + "/in_humidityrelative_input", 0.001F);
+  if (!humResult) {
+    return std::unexpected{humResult.error()};
   }
+  const float humidity = humResult.value();
 
   // Validate plausible physical ranges
-  if (*temp < minTemperature || *temp > maxTemperature) {
+  if (temperature < minTemperature || temperature > maxTemperature) {
     return std::unexpected{warden::SensorError::InvalidData};
   }
-  if (*hum < minHumidity || *hum > maxHumidity) {
+  if (humidity < minHumidity || humidity > maxHumidity) {
     return std::unexpected{warden::SensorError::InvalidData};
   }
 
-  return warden::Reading{.temperature = *temp, .humidity = *hum, .timestamp = std::chrono::system_clock::now()};
+  return warden::Reading{
+      .temperature = temperature, .humidity = humidity, .timestamp = std::chrono::system_clock::now()};
 }
 
 std::expected<float, warden::SensorError> Dht22Sensor::readSysfsValue(const std::string &path, float scale) const {

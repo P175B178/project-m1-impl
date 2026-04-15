@@ -10,12 +10,12 @@ namespace warden {
 /// concerns — any color can in principle blink or be steady.
 class Led {
 public:
-  Led() = default;
-  virtual ~Led() = default;
-  Led(const Led &) = delete;
+  Led()                       = default;
+  virtual ~Led()              = default;
+  Led(const Led &)            = delete;
   Led &operator=(const Led &) = delete;
-  Led(Led &&) = delete;
-  Led &operator=(Led &&) = delete;
+  Led(Led &&)                 = delete;
+  Led &operator=(Led &&)      = delete;
 
   virtual void setMode(LedColor color, bool blink) = 0;
 

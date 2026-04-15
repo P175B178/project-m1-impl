@@ -18,12 +18,12 @@ enum class SensorError : std::uint8_t {
 /// Abstract sensor interface.
 class Sensor {
 public:
-  Sensor() = default;
-  virtual ~Sensor() = default;
-  Sensor(const Sensor &) = delete;
+  Sensor()                          = default;
+  virtual ~Sensor()                 = default;
+  Sensor(const Sensor &)            = delete;
   Sensor &operator=(const Sensor &) = delete;
-  Sensor(Sensor &&) = delete;
-  Sensor &operator=(Sensor &&) = delete;
+  Sensor(Sensor &&)                 = delete;
+  Sensor &operator=(Sensor &&)      = delete;
 
   [[nodiscard]] virtual std::expected<Reading, SensorError> read() const = 0;
 };

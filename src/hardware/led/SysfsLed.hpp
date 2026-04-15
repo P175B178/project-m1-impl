@@ -19,10 +19,10 @@ public:
   explicit SysfsLed(std::string name, bool inverted = false);
   ~SysfsLed();
 
-  SysfsLed(const SysfsLed &) = delete;
+  SysfsLed(const SysfsLed &)            = delete;
   SysfsLed &operator=(const SysfsLed &) = delete;
-  SysfsLed(SysfsLed &&) = delete;
-  SysfsLed &operator=(SysfsLed &&) = delete;
+  SysfsLed(SysfsLed &&)                 = delete;
+  SysfsLed &operator=(SysfsLed &&)      = delete;
 
   void setOn() noexcept;
   void setOff() noexcept;

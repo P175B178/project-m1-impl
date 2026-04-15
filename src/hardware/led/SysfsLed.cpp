@@ -15,7 +15,9 @@ void SysfsLed::writeFile(const std::string &path, const char *value) noexcept {
   f << value;
 }
 
-SysfsLed::SysfsLed(std::string name, bool inverted) : basePath{"/sys/class/leds/" + name}, inverted{inverted} {
+SysfsLed::SysfsLed(std::string name, bool inverted)
+      : basePath{"/sys/class/leds/" + name}
+      , inverted{inverted} {
   spdlog::debug("SysfsLed: init '{}' (inverted={})", name, inverted);
   writeFile(basePath + "/trigger", "none");
   setOff();

@@ -24,7 +24,8 @@ struct Sample {
 /// state and returns a transition only if the state changed.
 class StateMachine {
 public:
-  explicit StateMachine(float temperatureThreshold, float humidityThreshold); // NOLINT(bugprone-easily-swappable-parameters)
+  explicit StateMachine(float temperatureThreshold, // NOLINT(bugprone-easily-swappable-parameters)
+                        float humidityThreshold);
 
   /// Feed an averaged sample. Returns a transition if the state changed,
   /// std::nullopt if it stayed the same.

@@ -32,8 +32,8 @@ public:
   explicit Dht22Sensor(std::string sysfsBasePath,
                        float minTemperature = -40.0F,
                        float maxTemperature = 80.0F,
-                       float minHumidity = 0.0F,
-                       float maxHumidity = 100.0F);
+                       float minHumidity    = 0.0F,
+                       float maxHumidity    = 100.0F);
 
   [[nodiscard]] std::expected<warden::Reading, warden::SensorError> read() const override;
 

@@ -11,9 +11,12 @@ using namespace std::chrono_literals;
 namespace {
 // Passive buzzer needs a square wave — tone frequency determines pitch.
 constexpr int toneFreqHz = 2000;
+
 constexpr auto tonePeriod = std::chrono::microseconds{1'000'000 / toneFreqHz};
+
 // GPIO 17, physical pin 11 — fixed by hardware wiring.
 constexpr unsigned int gpioPin = 17;
+
 // Beep timing constants.
 constexpr auto shortBeepDuration = 100ms;
 constexpr auto shortBeepPause    = 100ms;
@@ -22,7 +25,8 @@ constexpr auto longBeepDuration  = 500ms;
 
 namespace warden::hardware {
 
-GpioBuzzer::GpioBuzzer(const std::string &chipPath) : pin{chipPath, gpioPin, "buzzer"} {}
+GpioBuzzer::GpioBuzzer(const std::string &chipPath)
+      : pin{chipPath, gpioPin, "buzzer"} {}
 
 void GpioBuzzer::emitTone(std::chrono::milliseconds duration) {
   const auto end = std::chrono::steady_clock::now() + duration;

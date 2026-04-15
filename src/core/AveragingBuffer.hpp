@@ -12,7 +12,9 @@ namespace warden {
 /// their average. The window size is set at runtime from the config file.
 template <typename T> class AveragingBuffer {
 public:
-  explicit AveragingBuffer(std::size_t capacity) : buffer(capacity), capacity{capacity} {
+  explicit AveragingBuffer(std::size_t capacity)
+        : buffer(capacity)
+        , capacity{capacity} {
     if (capacity == 0) {
       throw std::invalid_argument("Averaging window must be > 0");
     }
@@ -21,7 +23,7 @@ public:
   /// Add a new value, evicting the oldest if the buffer is full.
   void push(T value) noexcept {
     buffer[head] = value;
-    head = (head + 1) % capacity;
+    head         = (head + 1) % capacity;
     if (count < capacity) {
       ++count;
     }

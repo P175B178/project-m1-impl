@@ -24,10 +24,10 @@ public:
   StatusLed();
   ~StatusLed() override;
 
-  StatusLed(const StatusLed &) = delete;
+  StatusLed(const StatusLed &)            = delete;
   StatusLed &operator=(const StatusLed &) = delete;
-  StatusLed(StatusLed &&) = delete;
-  StatusLed &operator=(StatusLed &&) = delete;
+  StatusLed(StatusLed &&)                 = delete;
+  StatusLed &operator=(StatusLed &&)      = delete;
 
   void setMode(warden::LedColor color, bool blink) override;
   void setOff() override;

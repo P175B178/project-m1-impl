@@ -15,12 +15,13 @@ std::expected<Config, std::string> ConfigLoader::load(std::string_view path) {
   const Config defaults{};
   Config config{};
 
-  config.readInterval         = std::chrono::seconds{table["read_interval_s"].value_or(defaults.readInterval.count())};
-  config.averagingWindow      = static_cast<std::size_t>(table["averaging_window"].value_or(defaults.averagingWindow));
+  config.readInterval    = std::chrono::seconds{table["read_interval_s"].value_or(defaults.readInterval.count())};
+  config.averagingWindow = static_cast<std::size_t>(table["averaging_window"].value_or(defaults.averagingWindow));
 
+  // tresholds
   config.temperatureThreshold = table["thresholds"]["temperature"].value_or(defaults.temperatureThreshold);
   config.humidityThreshold    = table["thresholds"]["humidity"].value_or(defaults.humidityThreshold);
-
+  // validation
   config.minTemperature       = table["sensor_validation"]["min_temperature"].value_or(defaults.minTemperature);
   config.maxTemperature       = table["sensor_validation"]["max_temperature"].value_or(defaults.maxTemperature);
   config.minHumidity          = table["sensor_validation"]["min_humidity"].value_or(defaults.minHumidity);

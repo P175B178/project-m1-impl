@@ -19,7 +19,7 @@ struct RequestConfigDeleter {
 };
 
 GpioPin::GpioPin(const std::string &chipPath, unsigned int lineOffset, const std::string &consumer)
-    : offset{lineOffset} {
+      : offset{lineOffset} {
   chip = gpiod_chip_open(chipPath.c_str());
   if (!chip) {
     throw std::runtime_error{"Cannot open GPIO chip: " + chipPath};

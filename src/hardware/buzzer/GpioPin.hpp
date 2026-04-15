@@ -17,10 +17,10 @@ public:
   GpioPin(const std::string &chipPath, unsigned int lineOffset, const std::string &consumer);
   ~GpioPin();
 
-  GpioPin(const GpioPin &) = delete;
+  GpioPin(const GpioPin &)            = delete;
   GpioPin &operator=(const GpioPin &) = delete;
-  GpioPin(GpioPin &&) = delete;
-  GpioPin &operator=(GpioPin &&) = delete;
+  GpioPin(GpioPin &&)                 = delete;
+  GpioPin &operator=(GpioPin &&)      = delete;
 
   void setHigh();
   void setLow();
