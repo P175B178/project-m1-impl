@@ -1,7 +1,7 @@
 // Dev Container configuration — VS Code builds and runs inside this container.
 // See https://containers.dev/implementors/json_reference/ for all options.
 {
-  "name": "Embedded Project",
+  "name": "Warden",
 
   // Build the container from the Dockerfile in this directory.
   "build": {

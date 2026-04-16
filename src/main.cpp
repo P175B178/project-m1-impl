@@ -1,6 +1,6 @@
 #include <cstdio>
 
 int main() {
-    std::puts("Hello from embedded!");
+    std::puts("Warden starting...");
     return 0;
 }
