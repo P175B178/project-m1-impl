@@ -5,11 +5,13 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bash \
-    # ── Compilers (Trixie: gcc/g++ 14.2, clang 19.1) ──
+    # ── Compilers and build tools (Trixie: gcc/g++ 14.2, clang 19.1) ──
     build-essential \
     gcc \
     g++ \
     clang \
+    cmake \
+    ninja-build \
     # ── Debugging (gdb 16.3) ──
     gdb \
     # ── Version control ──
