@@ -1,0 +1,27 @@
+// VS Code tasks — run via Terminal > Run Task, or use shortcuts:
+//   Ctrl+Shift+B  → Build (default build task)
+//
+// These are starter tasks using g++ directly.
+// Replace with CMake-based tasks as you set up your build system.
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build",
+      "type": "shell",
+      "command": "mkdir -p build && g++ -std=c++23 -Wall -Wextra -g -o build/main src/main.cpp",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": "$gcc"
+    },
+    {
+      "label": "Run",
+      "type": "shell",
+      "command": "./build/main",
+      "dependsOn": "Build",
+      "problemMatcher": []
+    }
+  ]
+}

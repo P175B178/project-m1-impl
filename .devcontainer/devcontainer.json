@@ -1,0 +1,31 @@
+// Dev Container configuration — VS Code builds and runs inside this container.
+// See https://containers.dev/implementors/json_reference/ for all options.
+{
+  "name": "Embedded Project",
+
+  // Build the container from the Dockerfile in this directory.
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+
+  // Additional tools installed on top of the Dockerfile.
+  // common-utils adds colored bash prompt and git integration in the terminal.
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": false,
+      "upgradePackages": false
+    }
+  },
+
+  // Extensions auto-installed inside the container.
+  // Add more as needed (e.g. ms-vscode.cmake-tools).
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cpptools"
+      ]
+    }
+  },
+
+  "remoteUser": "root"
+}
