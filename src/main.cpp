@@ -30,7 +30,7 @@ struct CliArgs {
   std::string configPath{"/etc/warden/config.cfg"};
 };
 
-static CliArgs parseCli(int argc, char *argv[]) {
+static CliArgs parseCli(int argc, char **argv) {
   CliArgs args;
 
   CLI::App app{"Warden — environmental monitor", "warden"};
@@ -46,7 +46,7 @@ static CliArgs parseCli(int argc, char *argv[]) {
 }
 
 // ── Entry point ────────────────────────────────────────────────────────────
-int main(int argc, char *argv[]) {
+int main(int argc, char **argv) { // NOLINT(bugprone-exception-escape)
   const auto args = parseCli(argc, argv);
 
   const auto configResult = warden::ConfigLoader::load(args.configPath);
@@ -60,8 +60,8 @@ int main(int argc, char *argv[]) {
   spdlog::info("Temp threshold: {:.1f}°C, humidity threshold: {:.1f}%", config.temperatureThreshold,
                config.humidityThreshold);
   spdlog::info("Read interval: {}s, averaging window: {} samples", config.readInterval.count(), config.averagingWindow);
-  spdlog::info("Sensor validation — temp: [{:.1f}, {:.1f}]°C  humidity: [{:.1f}, {:.1f}]%",
-               config.minTemperature, config.maxTemperature, config.minHumidity, config.maxHumidity);
+  spdlog::info("Sensor validation — temp: [{:.1f}, {:.1f}]°C  humidity: [{:.1f}, {:.1f}]%", config.minTemperature,
+               config.maxTemperature, config.minHumidity, config.maxHumidity);
 
 #ifdef HARDWARE_DISABLED
   std::puts("\n"
@@ -95,4 +95,3 @@ int main(int argc, char *argv[]) {
   spdlog::info("Shutting down");
   return EXIT_SUCCESS;
 }
-

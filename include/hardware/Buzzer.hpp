@@ -19,12 +19,12 @@ public:
   /// Emit one or more short beeps. Non-blocking — returns immediately.
   /// Cancels any beep currently in progress before starting the new sequence.
   /// @param count Number of beeps to emit.
-  virtual void shortBeep(int count) = 0;
+  virtual void shortBeep(unsigned int count) = 0;
 
   /// Emit one or more long beeps. Non-blocking — returns immediately.
   /// Cancels any beep currently in progress before starting the new sequence.
   /// @param count Number of beeps to emit.
-  virtual void longBeep(int count) = 0;
+  virtual void longBeep(unsigned int count) = 0;
 
   /// Silence the buzzer immediately. Cancels any beep currently in progress.
   virtual void setOff() = 0;

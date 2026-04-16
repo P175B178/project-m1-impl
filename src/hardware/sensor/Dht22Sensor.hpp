@@ -10,6 +10,7 @@ namespace warden::hardware {
 ///
 /// Setup (add to /boot/firmware/config.txt, then reboot):
 ///   dtoverlay=dht11,gpiopin=4
+///   (The dht11 overlay name is correct — it supports both DHT11 and DHT22.)
 ///
 /// After loading, the kernel exposes readings via sysfs:
 ///   /sys/bus/iio/devices/iio:device0/in_temp_input          (millidegrees C)

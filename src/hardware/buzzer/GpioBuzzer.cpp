@@ -41,23 +41,23 @@ void GpioBuzzer::setOff() {
   pin.setLow();
 }
 
-void GpioBuzzer::shortBeep(int count) {
+void GpioBuzzer::shortBeep(unsigned int count) {
   spdlog::debug("GpioBuzzer: {} short beep(s)", count);
   startBeeping(shortBeepDuration, count);
 }
 
-void GpioBuzzer::longBeep(int count) {
+void GpioBuzzer::longBeep(unsigned int count) {
   spdlog::debug("GpioBuzzer: {} long beep(s)", count);
   startBeeping(longBeepDuration, count);
 }
 
-void GpioBuzzer::startBeeping(std::chrono::milliseconds duration, int count) {
+void GpioBuzzer::startBeeping(std::chrono::milliseconds duration, unsigned int count) {
   stopBeeping();
   beepThread = std::jthread{[this, duration, count](std::stop_token stop) {
     std::mutex sleepMutex;
     std::condition_variable_any sleepCv;
 
-    for (auto beepIdx : std::views::iota(0, count)) {
+    for (auto beepIdx : std::views::iota(0U, count)) {
       if (stop.stop_requested()) {
         break;
       }

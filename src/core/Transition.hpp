@@ -24,9 +24,9 @@ inline void applyTransition(Led &led, Buzzer &buzzer, const StateTransition &tra
   }
 
   if (transition.to == State::Alert) {
-    buzzer.shortBeep(3); // NOLINT(readability-magic-numbers)
+    buzzer.shortBeep(3U); // NOLINT(readability-magic-numbers)
   } else if (transition.from == State::Alert) {
-    buzzer.longBeep(1); // NOLINT(readability-magic-numbers)
+    buzzer.longBeep(1U); // NOLINT(readability-magic-numbers)
   }
 }
 

@@ -27,6 +27,16 @@ std::expected<Config, std::string> ConfigLoader::load(std::string_view path) {
   config.minHumidity          = table["sensor_validation"]["min_humidity"].value_or(defaults.minHumidity);
   config.maxHumidity          = table["sensor_validation"]["max_humidity"].value_or(defaults.maxHumidity);
 
+  if (config.averagingWindow == 0) {
+    return std::unexpected{"averaging_window must be greater than 0"};
+  }
+  if (config.minTemperature >= config.maxTemperature) {
+    return std::unexpected{"sensor_validation: min_temperature must be less than max_temperature"};
+  }
+  if (config.minHumidity >= config.maxHumidity) {
+    return std::unexpected{"sensor_validation: min_humidity must be less than max_humidity"};
+  }
+
   return config;
 }
 

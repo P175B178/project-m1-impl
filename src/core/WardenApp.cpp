@@ -46,7 +46,7 @@ void WardenApp::sensorLoop(std::stop_token stopToken) { // NOLINT(performance-un
     const auto result = sensor.read();
 
     if (!result) {
-      spdlog::warn("Sensor read failed — skipping sample");
+      spdlog::warn("Sensor read failed ({}) — skipping sample", sensorErrorToString(result.error()));
     } else {
       readingQueue.push(*result);
     }

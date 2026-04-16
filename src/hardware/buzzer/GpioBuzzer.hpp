@@ -29,12 +29,12 @@ public:
   GpioBuzzer(GpioBuzzer &&)                 = delete;
   GpioBuzzer &operator=(GpioBuzzer &&)      = delete;
 
-  void shortBeep(int count) override;
-  void longBeep(int count) override;
+  void shortBeep(unsigned int count) override;
+  void longBeep(unsigned int count) override;
   void setOff() override;
 
 private:
-  void startBeeping(std::chrono::milliseconds duration, int count);
+  void startBeeping(std::chrono::milliseconds duration, unsigned int count);
   void stopBeeping();
   void emitTone(std::chrono::milliseconds duration, std::stop_token stop);
 

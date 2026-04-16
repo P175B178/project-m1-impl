@@ -3,7 +3,7 @@
 #include "Reading.hpp"
 
 #include <expected>
-#include <string>
+#include <string_view>
 
 namespace warden {
 
@@ -14,6 +14,14 @@ enum class SensorError : std::uint8_t {
   ReadFailure, ///< Could not read from the hardware (I/O error, device absent)
   InvalidData  ///< Reading outside configured plausible physical bounds
 };
+
+[[nodiscard]] constexpr std::string_view sensorErrorToString(SensorError error) {
+  switch (error) {
+  case SensorError::ReadFailure: return "ReadFailure";
+  case SensorError::InvalidData: return "InvalidData";
+  }
+  return "Unknown";
+}
 
 /// Abstract sensor interface.
 ///
