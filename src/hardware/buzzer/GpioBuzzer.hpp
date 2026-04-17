@@ -3,8 +3,8 @@
 #include "GpioPin.hpp"
 #include "hardware/Buzzer.hpp"
 
-#include <atomic>
 #include <chrono>
+#include <stop_token>
 #include <string>
 #include <thread>
 
@@ -32,11 +32,10 @@ public:
 private:
   void startBeeping(std::chrono::milliseconds duration, unsigned int count);
   void stopBeeping();
-  void emitTone(std::chrono::milliseconds duration);
+  void emitTone(std::chrono::milliseconds duration, std::stop_token stop);
 
   GpioPin pin;
-  std::atomic<bool> beepRunning{false};
-  std::thread beepThread;
+  std::jthread beepThread;
 };
 
 } // namespace warden::hardware

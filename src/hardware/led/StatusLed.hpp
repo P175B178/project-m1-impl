@@ -3,7 +3,6 @@
 #include "SysfsLed.hpp"
 #include "hardware/Led.hpp"
 
-#include <atomic>
 #include <thread>
 
 namespace warden::hardware {
@@ -38,9 +37,7 @@ private:
 
   SysfsLed act{"ACT", /*inverted=*/true};  // green
   SysfsLed pwr{"PWR", /*inverted=*/false}; // red
-
-  std::atomic<bool> blinkRunning{false};
-  std::thread blinkThread;
+  std::jthread blinkThread;
 };
 
 } // namespace warden::hardware

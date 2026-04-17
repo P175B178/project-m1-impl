@@ -1,6 +1,9 @@
 #include "GpioBuzzer.hpp"
 
 #include <chrono>
+#include <condition_variable>
+#include <mutex>
+#include <ranges>
 #include <thread>
 
 #include <spdlog/spdlog.h>
@@ -50,12 +53,18 @@ void GpioBuzzer::longBeep(unsigned int count) {
 
 void GpioBuzzer::startBeeping(std::chrono::milliseconds duration, unsigned int count) {
   stopBeeping();
-  beepRunning = true;
-  beepThread  = std::thread{[this, duration, count] {
-    for (unsigned int idx = 0; idx < count && beepRunning; ++idx) {
-      emitTone(duration);
-      if (idx + 1 < count && beepRunning) {
-        std::this_thread::sleep_for(shortBeepPause);
+  beepThread = std::jthread{[this, duration, count](std::stop_token stop) {
+    std::mutex sleepMutex;
+    std::condition_variable_any sleepCv;
+
+    for (auto beepIdx : std::views::iota(0U, count)) {
+      if (stop.stop_requested()) {
+        break;
+      }
+      emitTone(duration, stop);
+      if (beepIdx + 1 < count) {
+        std::unique_lock lock{sleepMutex};
+        sleepCv.wait_for(lock, stop, shortBeepPause, [] { return false; });
       }
     }
   }};
@@ -63,14 +72,14 @@ void GpioBuzzer::startBeeping(std::chrono::milliseconds duration, unsigned int c
 
 void GpioBuzzer::stopBeeping() {
   if (beepThread.joinable()) {
-    beepRunning = false;
+    beepThread.request_stop();
     beepThread.join();
   }
 }
 
-void GpioBuzzer::emitTone(std::chrono::milliseconds duration) {
+void GpioBuzzer::emitTone(std::chrono::milliseconds duration, std::stop_token stop) {
   const auto end = std::chrono::steady_clock::now() + duration;
-  while (beepRunning && std::chrono::steady_clock::now() < end) {
+  while (!stop.stop_requested() && std::chrono::steady_clock::now() < end) {
     pin.setHigh();
     std::this_thread::sleep_for(tonePeriod / 2);
     pin.setLow();
