@@ -1,3 +1,4 @@
+#include "core/AveragingBuffer.hpp"
 #include "core/StateMachine.hpp"
 #include "sim/SimSensor.hpp"
 #include "sim/StubBuzzer.hpp"
@@ -34,6 +35,8 @@ int main() {
   StubLed led;
   StubBuzzer buzzer;
   StateMachine sm(28.0f, 70.0f);
+  AveragingBuffer<float> tempBuffer(10);
+  AveragingBuffer<float> humBuffer(10);
 
   // Set initial LED state
   led.setMode(LedColor::Green, false);
@@ -47,9 +50,16 @@ int main() {
     }
 
     const auto &r = *result;
-    spdlog::info("temp={:.1f} C, humidity={:.1f} % [{}]", r.temperature, r.humidity, stateToString(sm.currentState()));
+    tempBuffer.push(r.temperature);
+    humBuffer.push(r.humidity);
 
-    auto transition = sm.update({r.temperature, r.humidity});
+    float avgTemp = *tempBuffer.average();
+    float avgHum  = *humBuffer.average();
+
+    spdlog::info("temp={:.1f} C (raw={:.1f}), humidity={:.1f} % (raw={:.1f}) [{}]", avgTemp, r.temperature, avgHum,
+                 r.humidity, stateToString(sm.currentState()));
+
+    auto transition = sm.update({avgTemp, avgHum});
     if (transition) {
       spdlog::info("State: {} -> {}", stateToString(transition->from), stateToString(transition->to));
       applyTransition(led, buzzer, *transition);
