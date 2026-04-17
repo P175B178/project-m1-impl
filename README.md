@@ -2,8 +2,41 @@
 
 IoT environmental monitoring system for Raspberry Pi 5.
 
-## Getting Started
+---
 
-1. Open this repository in VS Code
-2. Reopen in Dev Container (install the [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension if you haven't)
-3. Start building
+## Dev environment
+
+The project uses a **VS Code dev container**. Nothing needs to be installed on the host except:
+
+- [Docker](https://docs.docker.com/get-docker/)
+- [VS Code](https://code.visualstudio.com/) with the **Dev Containers** extension
+
+Open the project in VS Code, then click **Reopen in Container** (or `Ctrl+Shift+P` → **Dev Containers: Reopen in Container**).
+
+---
+
+## Build and run
+
+**VS Code task:** `Build` (`Ctrl+Shift+B`)
+
+```bash
+cmake --preset debug && cmake --build --preset debug
+```
+
+**Run:**
+
+**VS Code task:** `Run`
+
+```bash
+./build/debug/main
+```
+
+**Debug:** Press `F5` — builds and launches under GDB.
+
+**Clean build directories:**
+
+**VS Code task:** `Clean all build directories`
+
+```bash
+rm -rf build/
+```

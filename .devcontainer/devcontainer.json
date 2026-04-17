@@ -18,11 +18,12 @@
   },
 
   // Extensions auto-installed inside the container.
-  // Add more as needed (e.g. ms-vscode.cmake-tools).
   "customizations": {
     "vscode": {
       "extensions": [
-        "ms-vscode.cpptools"
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools",
+        "twxs.cmake"
       ]
     }
   },

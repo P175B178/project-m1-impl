@@ -1,4 +1,4 @@
-// VS Code tasks — run via Terminal > Run Task, or use shortcuts:
+   // VS Code tasks — run via Terminal > Run Task, or use shortcuts:
 //   Ctrl+Shift+B  → Build (default build task)
 {
   "version": "2.0.0",
@@ -18,6 +18,12 @@
       "type": "shell",
       "command": "./build/debug/main",
       "dependsOn": "Build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Clean all build directories",
+      "type": "shell",
+      "command": "rm -rf build/",
       "problemMatcher": []
     }
   ]
