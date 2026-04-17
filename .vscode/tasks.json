@@ -21,6 +21,13 @@
       "problemMatcher": []
     },
     {
+      "label": "Run tests",
+      "type": "shell",
+      "command": "ctest --preset debug",
+      "dependsOn": "Build",
+      "problemMatcher": []
+    },
+    {
       "label": "Clean all build directories",
       "type": "shell",
       "command": "rm -rf build/",
