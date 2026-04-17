@@ -1,6 +1,6 @@
 # Cross-compilation toolchain for Raspberry Pi 5 (aarch64 / ARM Cortex-A76)
-# Requires: gcc-aarch64-linux-gnu, g++-aarch64-linux-gnu
-# (installed in the devcontainer)
+# Requires: gcc-aarch64-linux-gnu, g++-aarch64-linux-gnu, libgpiod-dev:arm64
+# (all installed in the devcontainer)
 
 set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR aarch64)
