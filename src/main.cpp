@@ -1,8 +1,5 @@
 #include "core/ConfigLoader.hpp"
 #include "core/WardenApp.hpp"
-#include "sim/SimSensor.hpp"
-#include "sim/StubBuzzer.hpp"
-#include "sim/StubLed.hpp"
 
 #include <CLI/CLI.hpp>
 #include <spdlog/spdlog.h>
@@ -12,6 +9,16 @@
 #include <cstdlib>
 #include <stop_token>
 #include <string>
+
+#ifdef HARDWARE_DISABLED
+#include "sim/SimSensor.hpp"
+#include "sim/StubBuzzer.hpp"
+#include "sim/StubLed.hpp"
+#else
+#include "hardware/buzzer/GpioBuzzer.hpp"
+#include "hardware/led/StatusLed.hpp"
+#include "hardware/sensor/Dht22Sensor.hpp"
+#endif
 
 namespace {
 std::stop_source g_stopSource; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
@@ -61,6 +68,7 @@ int main(int argc, char **argv) { // NOLINT(bugprone-exception-escape)
   spdlog::info("Sensor validation: temp [{:.1f}, {:.1f}] C  hum [{:.1f}, {:.1f}]%", config.minTemperature,
                config.maxTemperature, config.minHumidity, config.maxHumidity);
 
+#ifdef HARDWARE_DISABLED
   std::puts("\n"
             "  ╔══════════════════════════════════════════════════════╗\n"
             "  ║                                                      ║\n"
@@ -70,10 +78,15 @@ int main(int argc, char **argv) { // NOLINT(bugprone-exception-escape)
             "  ║   Do NOT use this output for anything real.          ║\n"
             "  ║                                                      ║\n"
             "  ╚══════════════════════════════════════════════════════╝\n");
-
+  spdlog::warn("Hardware disabled — running with simulated sensor");
   warden::sim::SimSensor sensor;
   warden::sim::StubLed led;
   warden::sim::StubBuzzer buzzer;
+#else
+  warden::hardware::Dht22Sensor sensor;
+  warden::hardware::StatusLed led;
+  warden::hardware::GpioBuzzer buzzer;
+#endif
 
   spdlog::info("Running — press Ctrl-C to stop");
 

@@ -3,11 +3,12 @@
   "configurePresets": [
     {
       "name": "debug",
-      "displayName": "Debug",
+      "displayName": "Debug / Sim (host)",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
+        "ENABLE_HARDWARE": "OFF",
         "BUILD_TESTING": "ON",
         "CMAKE_CXX_FLAGS": "-fsanitize=address,undefined -fno-omit-frame-pointer"
       }
@@ -20,6 +21,7 @@
       "toolchainFile": "${sourceDir}/cmake/toolchains/raspberrypi-aarch64.cmake",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
+        "ENABLE_HARDWARE": "ON",
         "BUILD_TESTING": "OFF"
       }
     },
@@ -31,6 +33,7 @@
       "toolchainFile": "${sourceDir}/cmake/toolchains/raspberrypi-aarch64.cmake",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
+        "ENABLE_HARDWARE": "ON",
         "BUILD_TESTING": "OFF"
       }
     },
