@@ -92,6 +92,29 @@ else()
     target_link_libraries(warden PRIVATE warden_core warden_sim CLI11::CLI11)
 endif()
 
+# ── Install rules ──
+install(TARGETS warden RUNTIME DESTINATION bin)
+install(FILES config/config.cfg DESTINATION etc/warden)
+
+# ── Packaging (CPack) ──
+set(CPACK_PACKAGE_NAME            "warden")
+set(CPACK_PACKAGE_VERSION         ${PROJECT_VERSION})
+set(CPACK_PACKAGE_FILE_NAME       "warden-${PROJECT_VERSION}-arm64")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Environmental monitor for Raspberry Pi")
+set(CPACK_GENERATOR               "TGZ")
+
+if(ENABLE_HARDWARE)
+    list(APPEND CPACK_GENERATOR "DEB")
+    set(CPACK_DEBIAN_PACKAGE_MAINTAINER   "warden")
+    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "arm64")
+    set(CPACK_DEBIAN_FILE_NAME            DEB-DEFAULT)
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS      "libgpiod2")
+    set(CPACK_DEBIAN_PACKAGE_DESCRIPTION
+        "Monitors temperature and humidity via DHT22 on a Raspberry Pi.\n Signals state through built-in LEDs and a buzzer.")
+endif()
+
+include(CPack)
+
 # ── Format target ──
 find_program(CLANG_FORMAT_EXE clang-format)
 if(CLANG_FORMAT_EXE)

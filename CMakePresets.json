@@ -68,6 +68,15 @@
       }
     }
   ],
+  "packagePresets": [
+    {
+      "name": "pi-release",
+      "displayName": "Pi Release",
+      "configurePreset": "pi-release",
+      "generators": ["TGZ", "DEB"],
+      "packageDirectory": "${sourceDir}/package"
+    }
+  ],
   "workflowPresets": [
     {
       "name": "tidy",
@@ -75,6 +84,15 @@
       "steps": [
         { "type": "configure", "name": "clang-tidy" },
         { "type": "build",     "name": "clang-tidy" }
+      ]
+    },
+    {
+      "name": "package",
+      "displayName": "Package — Pi release (.deb + .tar.gz)",
+      "steps": [
+        { "type": "configure", "name": "pi-release" },
+        { "type": "build",     "name": "pi-release" },
+        { "type": "package",   "name": "pi-release" }
       ]
     }
   ]

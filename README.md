@@ -167,6 +167,24 @@ Breakpoints, step-through, and variable inspection all work normally.
 
 ---
 
+## Packaging a release
+
+Builds an optimized Pi binary and packages it as `.deb` and `.tar.gz`:
+
+**VS Code task:** `Workflow: Package`
+
+```bash
+rm -rf package && cmake --workflow --preset package
+```
+
+The packages are written to `package/`. Install the `.deb` on the Pi:
+
+```bash
+sudo apt install ./warden_1.0.0_arm64.deb
+```
+
+---
+
 ## Utilities
 
 ### Formatting
