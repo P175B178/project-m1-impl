@@ -19,5 +19,5 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(spdlog)
 
 add_executable(main src/main.cpp)
-target_include_directories(main PRIVATE include)
+target_include_directories(main PRIVATE include src)
 target_link_libraries(main PRIVATE spdlog::spdlog)
