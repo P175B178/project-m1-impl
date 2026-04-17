@@ -1,0 +1,24 @@
+#!/bin/bash
+# Runs before every commit. Skip with: git commit --no-verify
+set -euo pipefail
+
+echo "pre-commit: checking formatting..."
+
+if ! command -v clang-format &>/dev/null; then
+    echo "pre-commit: clang-format not found, skipping format check"
+    exit 0
+fi
+
+if [ ! -f build/debug/build.ninja ]; then
+    cmake --preset debug > /dev/null 2>&1
+fi
+
+cmake --build --preset debug --target format > /dev/null 2>&1
+
+if ! git diff --exit-code --quiet; then
+    echo ""
+    echo "Formatting errors found — files were reformatted. Stage the changes and commit again."
+    exit 1
+fi
+
+echo "pre-commit: OK"
