@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.25)
-project(main VERSION 1.0.0 LANGUAGES CXX)
+project(warden VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -59,15 +59,18 @@ endif()
 # ── Core library (no hardware deps, testable on host) ──
 file(GLOB_RECURSE CORE_SOURCES CONFIGURE_DEPENDS src/core/*.cpp)
 add_library(warden_core ${CORE_SOURCES})
-target_include_directories(warden_core PUBLIC include src/core)
+target_include_directories(warden_core
+    PUBLIC  include
+    PRIVATE src/core
+)
 target_link_libraries(warden_core PUBLIC spdlog::spdlog tomlplusplus::tomlplusplus)
 
 # ── Main executable ──
-add_executable(main src/main.cpp)
-target_include_directories(main PRIVATE src)
+add_executable(warden src/main.cpp)
+target_include_directories(warden PRIVATE src)
 # Inject project version so --version can report it without hardcoding.
-target_compile_definitions(main PRIVATE WARDEN_VERSION="${PROJECT_VERSION}")
-target_link_libraries(main PRIVATE warden_core CLI11::CLI11)
+target_compile_definitions(warden PRIVATE WARDEN_VERSION="${PROJECT_VERSION}")
+target_link_libraries(warden PRIVATE warden_core CLI11::CLI11)
 
 # ── Format target ──
 find_program(CLANG_FORMAT_EXE clang-format)

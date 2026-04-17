@@ -4,8 +4,10 @@
 
 #include <spdlog/spdlog.h>
 
+namespace warden::sim {
+
 /// Simulated buzzer — logs beep requests to the console.
-class StubBuzzer : public Buzzer {
+class StubBuzzer final : public Buzzer {
 public:
   void shortBeep(unsigned int count) override { spdlog::info("[BUZZER] {} short beep(s)", count); }
 
@@ -13,3 +15,5 @@ public:
 
   void setOff() override { spdlog::info("[BUZZER] off"); }
 };
+
+} // namespace warden::sim

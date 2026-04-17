@@ -6,6 +6,8 @@
 #include "hardware/Led.hpp"
 #include "hardware/LedColor.hpp"
 
+namespace warden {
+
 /// Apply the LED and buzzer reaction for a state transition.
 inline void applyTransition(Led &led, Buzzer &buzzer, const StateTransition &transition) {
   switch (transition.to) {
@@ -26,3 +28,5 @@ inline void applyTransition(Led &led, Buzzer &buzzer, const StateTransition &tra
     buzzer.longBeep(1U); // NOLINT(readability-magic-numbers)
   }
 }
+
+} // namespace warden

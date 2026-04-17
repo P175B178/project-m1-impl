@@ -1,5 +1,8 @@
 #include "StateMachine.hpp"
 
+namespace warden {
+
+
 StateMachine::StateMachine(float temperatureThreshold, // NOLINT(bugprone-easily-swappable-parameters)
                            float humidityThreshold)
       : temperatureThreshold{temperatureThreshold}
@@ -28,3 +31,5 @@ State StateMachine::evaluate(Sample sample) const noexcept {
   }
   return State::Normal;
 }
+
+} // namespace warden

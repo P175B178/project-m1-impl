@@ -1,7 +1,5 @@
-#include "core/AveragingBuffer.hpp"
 #include "core/ConfigLoader.hpp"
-#include "core/StateMachine.hpp"
-#include "core/Transition.hpp"
+#include "core/WardenApp.hpp"
 #include "sim/SimSensor.hpp"
 #include "sim/StubBuzzer.hpp"
 #include "sim/StubLed.hpp"
@@ -9,10 +7,9 @@
 #include <CLI/CLI.hpp>
 #include <spdlog/spdlog.h>
 
-#include <condition_variable>
 #include <csignal>
+#include <cstdio>
 #include <cstdlib>
-#include <mutex>
 #include <stop_token>
 #include <string>
 
@@ -43,13 +40,14 @@ CliArgs parseCli(int argc, char **argv) {
 }
 } // namespace
 
+// ── Entry point ──────────────────────────────────────────────────────────────
 int main(int argc, char **argv) { // NOLINT(bugprone-exception-escape)
   const auto args = parseCli(argc, argv);
 
   std::signal(SIGINT, handleSignal);
   std::signal(SIGTERM, handleSignal);
 
-  const auto configResult = ConfigLoader::load(args.configPath);
+  const auto configResult = warden::ConfigLoader::load(args.configPath);
   if (!configResult) {
     spdlog::error("Failed to load config '{}': {}", args.configPath, configResult.error());
     return EXIT_FAILURE;
@@ -63,57 +61,22 @@ int main(int argc, char **argv) { // NOLINT(bugprone-exception-escape)
   spdlog::info("Sensor validation: temp [{:.1f}, {:.1f}] C  hum [{:.1f}, {:.1f}]%", config.minTemperature,
                config.maxTemperature, config.minHumidity, config.maxHumidity);
 
-  SimSensor sensor;
-  StubLed led;
-  StubBuzzer buzzer;
-  StateMachine stateMachine(config.temperatureThreshold, config.humidityThreshold);
-  AveragingBuffer<float> tempBuffer(config.averagingWindow);
-  AveragingBuffer<float> humBuffer(config.averagingWindow);
+  std::puts("\n"
+            "  ╔══════════════════════════════════════════════════════╗\n"
+            "  ║                                                      ║\n"
+            "  ║   *** S I M U L A T I O N   M O D E ***              ║\n"
+            "  ║                                                      ║\n"
+            "  ║   No real hardware. Sensor readings are fake.        ║\n"
+            "  ║   Do NOT use this output for anything real.          ║\n"
+            "  ║                                                      ║\n"
+            "  ╚══════════════════════════════════════════════════════╝\n");
 
-  led.setMode(LedColor::Green, false);
+  warden::sim::SimSensor sensor;
+  warden::sim::StubLed led;
+  warden::sim::StubBuzzer buzzer;
 
-  std::mutex cvMutex;
-  std::condition_variable_any cv;
-  const std::stop_token stopToken = g_stopSource.get_token();
+  spdlog::info("Running — press Ctrl-C to stop");
 
-  while (!stopToken.stop_requested()) {
-    auto result = sensor.read();
-    if (!result) {
-      spdlog::warn("Sensor read failed ({})", sensorErrorToString(result.error()));
-    } else {
-      const auto &reading     = *result;
-      bool        tempOutOfRange = reading.temperature < config.minTemperature || reading.temperature > config.maxTemperature;
-      bool        humOutOfRange  = reading.humidity < config.minHumidity || reading.humidity > config.maxHumidity;
-      if (tempOutOfRange || humOutOfRange) {
-        spdlog::warn("Reading out of range (temp={:.1f}, hum={:.1f}) — skipping", reading.temperature,
-                     reading.humidity);
-      } else {
-        tempBuffer.push(reading.temperature);
-        humBuffer.push(reading.humidity);
-
-        // NOLINTBEGIN(bugprone-unchecked-optional-access)
-        float avgTemp = *tempBuffer.average();
-        float avgHum  = *humBuffer.average();
-        // NOLINTEND(bugprone-unchecked-optional-access)
-
-        spdlog::info("temp={:.1f} C (raw={:.1f})  hum={:.1f}% (raw={:.1f})  state={}", avgTemp, reading.temperature,
-                     avgHum, reading.humidity, stateToString(stateMachine.currentState()));
-
-        auto transition = stateMachine.update({.temperature = avgTemp, .humidity = avgHum});
-        if (transition) {
-          spdlog::info("State change: {} -> {}", stateToString(transition->from), stateToString(transition->to));
-          applyTransition(led, buzzer, *transition);
-        }
-      }
-    }
-
-    std::unique_lock<std::mutex> lock(cvMutex);
-    cv.wait_for(lock, stopToken, config.readInterval, [&] { return stopToken.stop_requested(); });
-  }
-
-  spdlog::info("Shutting down...");
-  led.setOff();
-  buzzer.setOff();
-
-  return 0;
+  warden::WardenApp app{sensor, led, buzzer, config};
+  app.run(g_stopSource.get_token());
 }

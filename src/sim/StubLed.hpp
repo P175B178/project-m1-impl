@@ -4,8 +4,10 @@
 
 #include <spdlog/spdlog.h>
 
+namespace warden::sim {
+
 /// Simulated LED — logs state changes to the console.
-class StubLed : public Led {
+class StubLed final : public Led {
 public:
   void setMode(LedColor color, bool blink) override {
     const char *name = "?";
@@ -25,3 +27,5 @@ public:
 
   void setOff() override { spdlog::info("[LED] off"); }
 };
+
+} // namespace warden::sim

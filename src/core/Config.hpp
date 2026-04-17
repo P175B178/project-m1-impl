@@ -3,6 +3,8 @@
 #include <chrono>
 #include <cstddef>
 
+namespace warden {
+
 /// All runtime configuration, loaded from a config file at startup.
 // NOLINTBEGIN(readability-magic-numbers)
 struct Config {
@@ -22,3 +24,5 @@ struct Config {
   float maxHumidity{100.0F};
 };
 // NOLINTEND(readability-magic-numbers)
+
+} // namespace warden

@@ -4,6 +4,19 @@ IoT environmental monitoring system for Raspberry Pi 5.
 
 ---
 
+## Project structure
+
+```text
+include/hardware/  — public interfaces
+src/core/          — core logic
+src/sim/           — simulated hardware stubs (host only)
+tests/             — unit tests (run on host)
+tests/mocks/       — mock implementations for testing
+config/config.cfg  — configuration file
+```
+
+---
+
 ## Dev environment
 
 The project uses a **VS Code dev container**. Nothing needs to be installed on the host except:
@@ -31,7 +44,7 @@ cmake --preset debug && cmake --build --preset debug
 **VS Code task:** `Run`
 
 ```bash
-./build/debug/main -c config/config.cfg
+./build/debug/warden -c config/config.cfg
 ```
 
 **Debug:** Press `F5` — builds and launches under GDB.
