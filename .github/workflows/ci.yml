@@ -1,0 +1,56 @@
+name: CI
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    container: debian:13-slim
+    env:
+      DEBIAN_FRONTEND: noninteractive
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache FetchContent dependencies
+        uses: actions/cache@v4
+        with:
+          path: /root/.cmake/fetchcontent
+          key: fetchcontent-${{ hashFiles('CMakeLists.txt') }}
+          restore-keys: fetchcontent-
+
+      - name: Install system dependencies
+        run: |
+          apt-get update && apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build git ca-certificates \
+            clang clang-format clang-tidy
+
+      - name: Check formatting
+        run: |
+          cmake --preset debug -DFETCHCONTENT_BASE_DIR=/root/.cmake/fetchcontent
+          cmake --build --preset debug --target format-check
+
+      - name: Static analysis (clang-tidy)
+        run: cmake --workflow --preset tidy
+
+      - name: Build and test (Debug)
+        run: |
+          cmake --build --preset debug
+          ctest --preset debug
+
+      - name: Build and test (Release)
+        run: |
+          cmake -B build/release -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_TESTING=ON \
+            -DFETCHCONTENT_BASE_DIR=/root/.cmake/fetchcontent
+          cmake --build build/release
+          ctest --test-dir build/release --output-on-failure
