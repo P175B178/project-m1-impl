@@ -67,9 +67,40 @@ ctest --preset debug
 
 ---
 
-## Cross-compile for Raspberry Pi
+## Deploy to Raspberry Pi
 
-Build an ARM64 binary inside the dev container:
+### One-time setup
+
+**1. Configure your Pi's address.**
+`.env` is created automatically from `.env.sample` on first container start. Edit it to set your Pi's details:
+
+```bash
+# .env
+PI_HOST=<Pi IP address>
+PI_USER=<your username on the Pi>
+PI_PASSWORD=<your Pi password>
+```
+
+> [!NOTE]
+> `.env` is gitignored and never committed. After editing it, restart the container for the changes to take effect: `Ctrl+Shift+P` → **Dev Containers: Reopen in Container**.
+
+**2. Install SSH key** (once — uses `PI_PASSWORD` from `.env`):
+
+**VS Code task:** `Pi init: 1. SSH key`
+
+```bash
+tools/pi/init/01-setup-ssh.sh
+```
+
+**3. Install runtime dependencies on the Pi:**
+
+**VS Code task:** `Pi init: 2. Bootstrap`
+
+```bash
+tools/pi/init/02-bootstrap.sh
+```
+
+### Build for Pi
 
 **VS Code task:** `Pi: Build`
 
@@ -77,12 +108,22 @@ Build an ARM64 binary inside the dev container:
 cmake --preset pi-debug && cmake --build --preset pi-debug
 ```
 
-**Release build:**
+### Deploy and run
 
-**VS Code task:** `Pi: Build (Release)`
+**VS Code task:** `Pi: Run` — builds, deploys, and runs in one step
 
 ```bash
-cmake --preset pi-release && cmake --build --preset pi-release
+cmake --preset pi-debug && cmake --build --preset pi-debug
+tools/pi/deploy.sh
+tools/pi/run.sh  # streams output to this terminal, Ctrl+C to stop
+```
+
+To deploy without rebuilding (e.g. after `Pi: Build`):
+
+**VS Code task:** `Pi: Deploy`
+
+```bash
+tools/pi/deploy.sh
 ```
 
 ---
@@ -127,4 +168,12 @@ Useful when builds get into a broken state:
 
 ```bash
 rm -rf build/
+```
+
+### Open a shell on the Pi
+
+**VS Code task:** `Pi: SSH`
+
+```bash
+tools/pi/connect.sh
 ```
