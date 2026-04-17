@@ -31,32 +31,58 @@ Open the project in VS Code, then click **Reopen in Container** (or `Ctrl+Shift+
 
 ---
 
-## Build and run
+## Local build and simulation
 
-**VS Code task:** `Build` (`Ctrl+Shift+B`)
+The default build targets the host machine (no Pi required). The binary runs with a **simulated sensor** that produces oscillating temperature and humidity values.
+
+**VS Code task:** `Local: Build` (`Ctrl+Shift+B`)
 
 ```bash
 cmake --preset debug && cmake --build --preset debug
 ```
 
-**Run:**
+**Run the simulation:**
 
-**VS Code task:** `Run`
+**VS Code task:** `Local: Run (sim)`
 
 ```bash
 ./build/debug/warden -c config/config.cfg
 ```
 
-**Debug:** Press `F5` — builds and launches under GDB.
+**Debug the simulation with breakpoints:**
+
+**VS Code launch config:** `Local: Debug` (`F5`) — builds automatically and launches under GDB.
 
 ---
 
 ## Tests
 
-**VS Code task:** `Run tests`
+Tests run on the host — no Pi required.
+
+**VS Code task:** `Local: Run tests`
 
 ```bash
 ctest --preset debug
+```
+
+---
+
+## Cross-compile for Raspberry Pi
+
+Build an ARM64 binary inside the dev container:
+
+**VS Code task:** `Pi: Build`
+
+```bash
+cmake --preset pi-debug && cmake --build --preset pi-debug
+```
+
+**Release build:**
+
+**VS Code task:** `Pi: Build (Release)`
+
+```bash
+cmake --preset pi-release && cmake --build --preset pi-release
 ```
 
 ---
