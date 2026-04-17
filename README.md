@@ -128,6 +128,16 @@ tools/pi/deploy.sh
 
 ---
 
+## Remote debugging
+
+Requires the debug binary to already be deployed (`Pi: Build` + `Pi: Deploy`).
+
+**VS Code launch config:** `Pi: Remote Debug` — connects to gdbserver on the Pi automatically. Select it in the debug dropdown (`Ctrl+Shift+D`) and press `F5`.
+
+Breakpoints, step-through, and variable inspection all work normally.
+
+---
+
 ## Utilities
 
 ### Formatting
