@@ -43,18 +43,51 @@
       "group": "build",
       "problemMatcher": ["$gcc"]
     },
-    // ── Utilities ──
     {
-      "label": "Format all sources",
+      "label": "Pi: Deploy",
       "type": "shell",
-      "command": "cmake --preset debug && cmake --build --preset debug --target format",
+      "command": "tools/pi/deploy.sh",
       "problemMatcher": []
     },
+    {
+      "label": "Pi: Run",
+      "type": "shell",
+      "command": "tools/pi/run.sh",
+      "dependsOn": ["Pi: Build", "Pi: Deploy"],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    },
+    {
+      "label": "Pi: SSH",
+      "type": "shell",
+      "command": "tools/pi/connect.sh",
+      "problemMatcher": []
+    },
+    // ── Pi: one-time setup ──
+    {
+      "label": "Pi init: 1. SSH key",
+      "type": "shell",
+      "command": "tools/pi/init/01-setup-ssh.sh",
+      "problemMatcher": []
+    },
+    {
+      "label": "Pi init: 2. Bootstrap",
+      "type": "shell",
+      "command": "tools/pi/init/02-bootstrap.sh",
+      "problemMatcher": []
+    },
+    // ── Utilities ──
     {
       "label": "Workflow: Verify",
       "type": "shell",
       "command": "cmake --preset debug && cmake --build --preset debug --target format-check && cmake --workflow --preset tidy && cmake --build --preset debug && ctest --preset debug",
       "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Format all sources",
+      "type": "shell",
+      "command": "cmake --preset debug && cmake --build --preset debug --target format",
+      "problemMatcher": []
     },
     {
       "label": "Clean all build directories",
