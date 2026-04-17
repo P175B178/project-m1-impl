@@ -3,28 +3,28 @@
 #include "hardware/Led.hpp"
 #include "hardware/LedColor.hpp"
 
-#include <iostream>
+#include <spdlog/spdlog.h>
 
-/// Simulated LED — prints state changes to stdout.
+/// No-op LED that logs state changes to the console.
 class StubLed final : public Led {
 public:
   void setMode(LedColor color, bool blink) override {
-    std::cout << "[LED] " << toString(color) << (blink ? " (blinking)" : "") << '\n';
+    spdlog::info("[LED] {} {}", toString(color), blink ? "blinking" : "");
   }
 
-  void setOff() override { std::cout << "[LED] OFF\n"; }
+  void setOff() override { spdlog::info("[LED] off"); }
 
 private:
   static const char *toString(LedColor color) {
     switch (color) {
     case LedColor::Green:
-      return "GREEN";
+      return "green";
     case LedColor::Orange:
-      return "ORANGE";
+      return "orange";
     case LedColor::Red:
-      return "RED";
+      return "red";
     default:
-      return "UNKNOWN";
+      return "unknown";
     }
   }
 };

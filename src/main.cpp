@@ -5,8 +5,9 @@
 #include "sim/StubBuzzer.hpp"
 #include "sim/StubLed.hpp"
 
+#include <spdlog/spdlog.h>
+
 #include <cstdio>
-#include <iostream>
 #include <thread>
 
 int main() { // NOLINT(bugprone-exception-escape)
@@ -25,7 +26,7 @@ int main() { // NOLINT(bugprone-exception-escape)
   while (true) {
     auto result = sensor.read();
     if (!result) {
-      std::cout << "Sensor read failed\n";
+      spdlog::warn("Sensor read failed");
       std::this_thread::sleep_for(readInterval);
       continue;
     }
@@ -39,13 +40,12 @@ int main() { // NOLINT(bugprone-exception-escape)
     float avgHum  = *humBuffer.average();
     // NOLINTEND(bugprone-unchecked-optional-access)
 
-    std::cout << "temp=" << avgTemp << " C (raw=" << reading.temperature << "), "
-              << "humidity=" << avgHum << " % (raw=" << reading.humidity << ")"
-              << " [" << stateToString(stateMachine.currentState()) << "]\n";
+    spdlog::info("temp={:.1f} C (raw={:.1f})  hum={:.1f}% (raw={:.1f})  state={}", avgTemp, reading.temperature, avgHum,
+                 reading.humidity, stateToString(stateMachine.currentState()));
 
     auto transition = stateMachine.update({.temperature = avgTemp, .humidity = avgHum});
     if (transition) {
-      std::cout << "State: " << stateToString(transition->from) << " -> " << stateToString(transition->to) << '\n';
+      spdlog::warn("State change: {} -> {}", stateToString(transition->from), stateToString(transition->to));
       applyTransition(led, buzzer, *transition);
     }
 

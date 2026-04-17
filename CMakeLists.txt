@@ -12,6 +12,14 @@ option(ENABLE_CLANG_TIDY "Run clang-tidy on every translation unit during build"
 include(FetchContent)
 set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
 
+FetchContent_Declare(
+    spdlog
+    GIT_REPOSITORY https://github.com/gabime/spdlog.git
+    GIT_TAG        v1.15.3
+    FIND_PACKAGE_ARGS
+)
+FetchContent_MakeAvailable(spdlog)
+
 include(CTest)
 
 if(BUILD_TESTING)
@@ -36,6 +44,7 @@ endif()
 file(GLOB_RECURSE CORE_SOURCES CONFIGURE_DEPENDS src/core/*.cpp)
 add_library(warden_core ${CORE_SOURCES})
 target_include_directories(warden_core PUBLIC include src/core)
+target_link_libraries(warden_core PUBLIC spdlog::spdlog)
 
 # ── Main executable ──
 add_executable(main src/main.cpp)

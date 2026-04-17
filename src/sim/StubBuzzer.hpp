@@ -2,14 +2,14 @@
 
 #include "hardware/Buzzer.hpp"
 
-#include <iostream>
+#include <spdlog/spdlog.h>
 
-/// Simulated buzzer — prints beep requests to stdout.
+/// No-op buzzer that logs beep requests to the console.
 class StubBuzzer final : public Buzzer {
 public:
-  void shortBeep(unsigned int count) override { std::cout << "[BUZZER] " << count << " short beep(s)\n"; }
+  void shortBeep(unsigned int count) override { spdlog::info("[BUZZER] {} short beep(s)", count); }
 
-  void longBeep(unsigned int count) override { std::cout << "[BUZZER] " << count << " long beep(s)\n"; }
+  void longBeep(unsigned int count) override { spdlog::info("[BUZZER] {} long beep(s)", count); }
 
-  void setOff() override { std::cout << "[BUZZER] OFF\n"; }
+  void setOff() override { spdlog::info("[BUZZER] off"); }
 };
