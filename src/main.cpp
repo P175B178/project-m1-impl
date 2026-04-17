@@ -33,7 +33,13 @@ int main() { // NOLINT(bugprone-exception-escape)
   AveragingBuffer<float> tempBuffer(10);
   AveragingBuffer<float> humBuffer(10);
 
-  // Set initial LED state
+  // NOLINTBEGIN(readability-magic-numbers)
+  constexpr float minTemperature = -40.0F;
+  constexpr float maxTemperature = 80.0F;
+  constexpr float minHumidity    = 0.0F;
+  constexpr float maxHumidity    = 100.0F;
+  // NOLINTEND(readability-magic-numbers)
+
   led.setMode(LedColor::Green, false);
 
   std::mutex cvMutex;
@@ -42,24 +48,33 @@ int main() { // NOLINT(bugprone-exception-escape)
 
   while (!stopToken.stop_requested()) {
     auto result = sensor.read();
-    if (result) {
-      const auto &r = *result;
-      tempBuffer.push(r.temperature);
-      humBuffer.push(r.humidity);
-
-      float avgTemp = *tempBuffer.average();
-      float avgHum  = *humBuffer.average();
-
-      spdlog::info("temp={:.1f} C (raw={:.1f}), humidity={:.1f} % (raw={:.1f}) [{}]", avgTemp, r.temperature, avgHum,
-                   r.humidity, stateToString(sm.currentState()));
-
-      auto transition = sm.update({avgTemp, avgHum});
-      if (transition) {
-        spdlog::info("State: {} -> {}", stateToString(transition->from), stateToString(transition->to));
-        applyTransition(led, buzzer, *transition);
-      }
+    if (!result) {
+      spdlog::warn("Sensor read failed ({})", sensorErrorToString(result.error()));
     } else {
-      spdlog::warn("Sensor read failed");
+      const auto &reading = *result;
+
+      if (reading.temperature < minTemperature || reading.temperature > maxTemperature ||
+          reading.humidity < minHumidity || reading.humidity > maxHumidity) {
+        spdlog::warn("Reading out of range (temp={:.1f}, hum={:.1f}) — skipping", reading.temperature,
+                     reading.humidity);
+      } else {
+        tempBuffer.push(reading.temperature);
+        humBuffer.push(reading.humidity);
+
+        // NOLINTBEGIN(bugprone-unchecked-optional-access)
+        float avgTemp = *tempBuffer.average();
+        float avgHum  = *humBuffer.average();
+        // NOLINTEND(bugprone-unchecked-optional-access)
+
+        spdlog::info("temp={:.1f} C (raw={:.1f})  hum={:.1f}% (raw={:.1f})  state={}", avgTemp, reading.temperature,
+                     avgHum, reading.humidity, stateToString(sm.currentState()));
+
+        auto transition = sm.update({.temperature = avgTemp, .humidity = avgHum});
+        if (transition) {
+          spdlog::info("State change: {} -> {}", stateToString(transition->from), stateToString(transition->to));
+          applyTransition(led, buzzer, *transition);
+        }
+      }
     }
 
     std::unique_lock<std::mutex> lock(cvMutex);
