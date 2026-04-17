@@ -43,8 +43,24 @@ else
   echo "    Done."
 fi
 
+echo "==> Enabling DHT22 kernel driver"
+CONFIG=/boot/firmware/config.txt
+OVERLAY="dtoverlay=dht11,gpiopin=4"
+if grep -qxF "$OVERLAY" "$CONFIG"; then
+  echo "    Already present in $CONFIG — skipping"
+else
+  echo "$OVERLAY" | sudo tee -a "$CONFIG" > /dev/null
+  echo "    Added. A reboot is required for the driver to load."
+  REBOOT_REQUIRED=true
+fi
+
 echo "==> Done"
 uname -m
+
+if [[ "${REBOOT_REQUIRED:-false}" == "true" ]]; then
+  echo ""
+  echo "*** Reboot the Pi for the DHT22 driver to take effect: sudo reboot ***"
+fi
 EOF
 
 echo "Bootstrap complete."
