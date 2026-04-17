@@ -36,5 +36,9 @@ jobs:
         run: |
           cmake -B build -G Ninja \
             -DCMAKE_BUILD_TYPE=Debug \
+            -DBUILD_TESTING=ON \
             -DFETCHCONTENT_BASE_DIR=/root/.cmake/fetchcontent
           cmake --build build
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure

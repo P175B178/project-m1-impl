@@ -33,6 +33,18 @@ cmake --preset debug && cmake --build --preset debug
 
 **Debug:** Press `F5` — builds and launches under GDB.
 
+---
+
+## Tests
+
+**VS Code task:** `Run tests`
+
+```bash
+ctest --preset debug
+```
+
+---
+
 **Clean build directories:**
 
 **VS Code task:** `Clean all build directories`
