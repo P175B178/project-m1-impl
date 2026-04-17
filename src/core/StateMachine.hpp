@@ -4,6 +4,8 @@
 
 #include <optional>
 
+namespace warden {
+
 struct StateTransition {
   State from;
   State to;
@@ -29,3 +31,5 @@ private:
   float humidityThreshold;
   State state{State::Normal};
 };
+
+} // namespace warden

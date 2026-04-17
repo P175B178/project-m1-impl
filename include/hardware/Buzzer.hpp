@@ -1,5 +1,7 @@
 #pragma once
 
+namespace warden {
+
 /// Abstract buzzer interface.
 class Buzzer {
 public:
@@ -14,3 +16,5 @@ public:
   virtual void longBeep(unsigned int count)  = 0;
   virtual void setOff()                      = 0;
 };
+
+} // namespace warden

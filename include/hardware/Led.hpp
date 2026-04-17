@@ -2,6 +2,8 @@
 
 #include "LedColor.hpp"
 
+namespace warden {
+
 /// Abstract LED interface.
 class Led {
 public:
@@ -15,3 +17,5 @@ public:
   virtual void setMode(LedColor color, bool blink) = 0;
   virtual void setOff()                            = 0;
 };
+
+} // namespace warden

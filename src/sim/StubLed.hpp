@@ -5,6 +5,8 @@
 
 #include <spdlog/spdlog.h>
 
+namespace warden::sim {
+
 /// No-op LED that logs state changes to the console.
 class StubLed final : public Led {
 public:
@@ -28,3 +30,5 @@ private:
     }
   }
 };
+
+} // namespace warden::sim

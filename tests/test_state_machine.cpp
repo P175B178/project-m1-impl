@@ -2,6 +2,8 @@
 
 #include <gtest/gtest.h>
 
+using namespace warden;
+
 static constexpr float tempThreshold = 28.0F;
 static constexpr float humThreshold  = 70.0F;
 

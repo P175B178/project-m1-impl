@@ -4,6 +4,8 @@
 
 #include <spdlog/spdlog.h>
 
+namespace warden::sim {
+
 /// No-op buzzer that logs beep requests to the console.
 class StubBuzzer final : public Buzzer {
 public:
@@ -13,3 +15,5 @@ public:
 
   void setOff() override { spdlog::info("[BUZZER] off"); }
 };
+
+} // namespace warden::sim

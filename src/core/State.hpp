@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <string_view>
 
+namespace warden {
+
 enum class State : std::uint8_t { Normal, Warning, Alert };
 
 [[nodiscard]] constexpr std::string_view stateToString(State state) noexcept {
@@ -16,3 +18,5 @@ enum class State : std::uint8_t { Normal, Warning, Alert };
   }
   return "Unknown";
 }
+
+} // namespace warden

@@ -6,6 +6,8 @@
 #include <stdexcept>
 #include <vector>
 
+namespace warden {
+
 /// Circular buffer that keeps the last `capacity` values and computes
 /// their average. The window size is set at runtime from the config file.
 template <typename T> class AveragingBuffer {
@@ -46,3 +48,5 @@ private:
   std::size_t head{0};
   std::size_t count{0};
 };
+
+} // namespace warden

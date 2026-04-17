@@ -5,6 +5,8 @@
 #include <expected>
 #include <string_view>
 
+namespace warden {
+
 enum class SensorError : std::uint8_t {
   ReadFailure, ///< Could not read from the hardware (I/O error, device absent)
   InvalidData  ///< Reading outside the sensor's physical limits (hardware/driver error)
@@ -35,3 +37,5 @@ public:
 
   [[nodiscard]] virtual std::expected<Reading, SensorError> read() const = 0;
 };
+
+} // namespace warden

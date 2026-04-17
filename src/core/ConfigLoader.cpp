@@ -2,6 +2,8 @@
 
 #include <toml++/toml.hpp>
 
+namespace warden {
+
 std::expected<Config, std::string> ConfigLoader::load(std::string_view path) {
   toml::table table;
   try {
@@ -37,3 +39,5 @@ std::expected<Config, std::string> ConfigLoader::load(std::string_view path) {
 
   return config;
 }
+
+} // namespace warden

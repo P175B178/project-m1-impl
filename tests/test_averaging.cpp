@@ -3,6 +3,8 @@
 #include <gtest/gtest.h>
 #include <stdexcept>
 
+using namespace warden;
+
 TEST(AveragingBuffer, ThrowsOnZeroCapacity) { EXPECT_THROW(AveragingBuffer<float>{0}, std::invalid_argument); }
 
 TEST(AveragingBuffer, EmptyBufferReturnsNullopt) {

@@ -6,6 +6,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+using namespace warden;
+using namespace warden::test;
 using ::testing::StrictMock;
 
 class TransitionTest : public ::testing::Test {

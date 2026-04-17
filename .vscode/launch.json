@@ -7,7 +7,7 @@
       "name": "Debug",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/debug/main",
+      "program": "${workspaceFolder}/build/debug/warden",
       "args": ["--config", "${workspaceFolder}/config/config.cfg"],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "Build",
