@@ -6,22 +6,46 @@
 #include "sim/StubBuzzer.hpp"
 #include "sim/StubLed.hpp"
 
+#include <CLI/CLI.hpp>
 #include <spdlog/spdlog.h>
 
 #include <cstdio>
 #include <cstdlib>
+#include <string>
 #include <thread>
 
-int main() { // NOLINT(bugprone-exception-escape)
-  std::puts("Warden starting...");
+// ── CLI ──────────────────────────────────────────────────────────────────────
+struct CliArgs {
+  std::string configPath{"/etc/warden/config.cfg"};
+};
 
-  const auto configResult = ConfigLoader::load("config/config.cfg");
+static CliArgs parseCli(int argc, char **argv) {
+  CliArgs args;
+
+  CLI::App app{"Warden — environmental monitor", "warden"};
+  app.set_version_flag("-v,--version", std::string{WARDEN_VERSION});
+  app.add_option("-c,--config", args.configPath, "Config file")->capture_default_str();
+
+  try {
+    app.parse(argc, argv);
+  } catch (const CLI::ParseError &err) {
+    std::exit(app.exit(err));
+  }
+  return args;
+}
+
+// ── Entry point ──────────────────────────────────────────────────────────────
+int main(int argc, char **argv) { // NOLINT(bugprone-exception-escape)
+  const auto args = parseCli(argc, argv);
+
+  const auto configResult = ConfigLoader::load(args.configPath);
   if (!configResult) {
-    spdlog::error("Failed to load config: {}", configResult.error());
+    spdlog::error("Failed to load config '{}': {}", args.configPath, configResult.error());
     return EXIT_FAILURE;
   }
   const auto &config = *configResult;
 
+  spdlog::info("Warden {} starting — config: {}", WARDEN_VERSION, args.configPath);
   spdlog::info("Temp threshold: {:.1f} C, humidity threshold: {:.1f}%", config.temperatureThreshold,
                config.humidityThreshold);
   spdlog::info("Read interval: {}s, averaging window: {} samples", config.readInterval.count(), config.averagingWindow);

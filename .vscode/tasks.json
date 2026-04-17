@@ -16,7 +16,7 @@
     {
       "label": "Run",
       "type": "shell",
-      "command": "./build/debug/main",
+      "command": "./build/debug/main -c config/config.cfg",
       "dependsOn": "Build",
       "problemMatcher": []
     },

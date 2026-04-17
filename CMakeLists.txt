@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.25)
-project(main LANGUAGES CXX)
+project(main VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -27,6 +27,14 @@ FetchContent_Declare(
     FIND_PACKAGE_ARGS
 )
 FetchContent_MakeAvailable(tomlplusplus)
+
+FetchContent_Declare(
+    CLI11
+    GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
+    GIT_TAG        v2.4.2
+    FIND_PACKAGE_ARGS
+)
+FetchContent_MakeAvailable(CLI11)
 
 include(CTest)
 
@@ -57,7 +65,9 @@ target_link_libraries(warden_core PUBLIC spdlog::spdlog tomlplusplus::tomlpluspl
 # ── Main executable ──
 add_executable(main src/main.cpp)
 target_include_directories(main PRIVATE src)
-target_link_libraries(main PRIVATE warden_core)
+# Inject project version so --version can report it without hardcoding.
+target_compile_definitions(main PRIVATE WARDEN_VERSION="${PROJECT_VERSION}")
+target_link_libraries(main PRIVATE warden_core CLI11::CLI11)
 
 # ── Format target ──
 find_program(CLANG_FORMAT_EXE clang-format)
