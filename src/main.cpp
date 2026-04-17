@@ -21,17 +21,33 @@ int main() { // NOLINT(bugprone-exception-escape)
   AveragingBuffer<float> humBuffer(10);                  // NOLINT(readability-magic-numbers)
   constexpr auto readInterval = std::chrono::seconds(5); // NOLINT(readability-magic-numbers)
 
+  // NOLINTBEGIN(readability-magic-numbers)
+  constexpr float minTemperature = -40.0F;
+  constexpr float maxTemperature = 80.0F;
+  constexpr float minHumidity    = 0.0F;
+  constexpr float maxHumidity    = 100.0F;
+  // NOLINTEND(readability-magic-numbers)
+
   led.setMode(LedColor::Green, false);
 
   while (true) {
     auto result = sensor.read();
     if (!result) {
-      spdlog::warn("Sensor read failed");
+      spdlog::warn("Sensor read failed ({})", sensorErrorToString(result.error()));
       std::this_thread::sleep_for(readInterval);
       continue;
     }
 
     const auto &reading = *result;
+
+    // Validate plausible physical ranges
+    if (reading.temperature < minTemperature || reading.temperature > maxTemperature ||
+        reading.humidity < minHumidity || reading.humidity > maxHumidity) {
+      spdlog::warn("Reading out of range (temp={:.1f}, hum={:.1f}) — skipping", reading.temperature, reading.humidity);
+      std::this_thread::sleep_for(readInterval);
+      continue;
+    }
+
     tempBuffer.push(reading.temperature);
     humBuffer.push(reading.humidity);
 
