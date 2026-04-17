@@ -15,8 +15,8 @@ namespace warden::hardware {
 ///   Orange -> ACT on,  PWR on
 ///   Red    -> ACT off, PWR on
 ///
-/// When blink=true, a background std::jthread toggles all active pins at 1 Hz.
-class StatusLed final : public warden::Led {
+/// When blink=true, a background thread toggles all active pins at 1 Hz.
+class StatusLed : public warden::Led {
 public:
   StatusLed();
   ~StatusLed() override;

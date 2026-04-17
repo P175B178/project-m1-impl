@@ -4,6 +4,7 @@
 #include "hardware/Buzzer.hpp"
 
 #include <chrono>
+#include <stop_token>
 #include <string>
 #include <thread>
 
@@ -13,7 +14,7 @@ namespace warden::hardware {
 /// Emits a tone by toggling the pin at a fixed frequency.
 ///
 /// shortBeep() and longBeep() are non-blocking — they start a background
-/// std::jthread and return immediately. A new call cancels any in-progress beep.
+/// thread and return immediately. A new call cancels any in-progress beep.
 class GpioBuzzer : public warden::Buzzer {
 public:
   explicit GpioBuzzer(const std::string &chipPath = "/dev/gpiochip4");

@@ -99,6 +99,12 @@
       "problemMatcher": ["$gcc"]
     },
     {
+      "label": "Workflow: Package",
+      "type": "shell",
+      "command": "rm -rf package && cmake --workflow --preset package",
+      "problemMatcher": ["$gcc"]
+    },
+    {
       "label": "Format all sources",
       "type": "shell",
       "command": "cmake --preset debug && cmake --build --preset debug --target format",

@@ -3,6 +3,8 @@
 #include <chrono>
 #include <condition_variable>
 #include <mutex>
+#include <stop_token>
+
 #include <spdlog/spdlog.h>
 
 using namespace std::chrono_literals;

@@ -1,31 +1,34 @@
 #pragma once
 
 #include "hardware/Led.hpp"
+#include "hardware/LedColor.hpp"
 
 #include <spdlog/spdlog.h>
 
 namespace warden::sim {
 
-/// Simulated LED — logs state changes to the console.
+/// No-op LED that logs state changes to the console.
 class StubLed final : public Led {
 public:
   void setMode(LedColor color, bool blink) override {
-    const char *name = "?";
-    switch (color) {
-    case LedColor::Green:
-      name = "green";
-      break;
-    case LedColor::Orange:
-      name = "orange";
-      break;
-    case LedColor::Red:
-      name = "red";
-      break;
-    }
-    spdlog::info("[LED] {}{}", name, blink ? " (blinking)" : "");
+    spdlog::info("[LED] {} {}", toString(color), blink ? "blinking" : "");
   }
 
   void setOff() override { spdlog::info("[LED] off"); }
+
+private:
+  static const char *toString(LedColor color) {
+    switch (color) {
+    case LedColor::Green:
+      return "green";
+    case LedColor::Orange:
+      return "orange";
+    case LedColor::Red:
+      return "red";
+    default:
+      return "unknown";
+    }
+  }
 };
 
 } // namespace warden::sim

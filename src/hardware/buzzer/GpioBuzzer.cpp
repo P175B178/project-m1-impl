@@ -3,6 +3,7 @@
 #include <chrono>
 #include <condition_variable>
 #include <mutex>
+#include <ranges>
 #include <thread>
 
 #include <spdlog/spdlog.h>
@@ -56,9 +57,12 @@ void GpioBuzzer::startBeeping(std::chrono::milliseconds duration, unsigned int c
     std::mutex sleepMutex;
     std::condition_variable_any sleepCv;
 
-    for (unsigned int idx = 0; idx < count && !stop.stop_requested(); ++idx) {
+    for (auto beepIdx : std::views::iota(0U, count)) {
+      if (stop.stop_requested()) {
+        break;
+      }
       emitTone(duration, stop);
-      if (idx + 1 < count && !stop.stop_requested()) {
+      if (beepIdx + 1 < count) {
         std::unique_lock lock{sleepMutex};
         sleepCv.wait_for(lock, stop, shortBeepPause, [] { return false; });
       }

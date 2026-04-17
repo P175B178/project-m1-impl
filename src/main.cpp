@@ -20,18 +20,18 @@
 #include "hardware/sensor/Dht22Sensor.hpp"
 #endif
 
+// ── Signal handling ──────────────────────────────────────────────────────────
 namespace {
-std::stop_source g_stopSource; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+std::stop_source appStop; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+void onSignal(int /*signal*/) { appStop.request_stop(); }
+} // namespace
 
-void handleSignal(int /*sig*/) {
-  g_stopSource.request_stop();
-}
-
+// ── CLI ──────────────────────────────────────────────────────────────────────
 struct CliArgs {
   std::string configPath{"/etc/warden/config.cfg"};
 };
 
-CliArgs parseCli(int argc, char **argv) {
+static CliArgs parseCli(int argc, char **argv) {
   CliArgs args;
 
   CLI::App app{"Warden — environmental monitor", "warden"};
@@ -45,14 +45,10 @@ CliArgs parseCli(int argc, char **argv) {
   }
   return args;
 }
-} // namespace
 
 // ── Entry point ──────────────────────────────────────────────────────────────
 int main(int argc, char **argv) { // NOLINT(bugprone-exception-escape)
   const auto args = parseCli(argc, argv);
-
-  std::signal(SIGINT, handleSignal);
-  std::signal(SIGTERM, handleSignal);
 
   const auto configResult = warden::ConfigLoader::load(args.configPath);
   if (!configResult) {
@@ -88,8 +84,14 @@ int main(int argc, char **argv) { // NOLINT(bugprone-exception-escape)
   warden::hardware::GpioBuzzer buzzer;
 #endif
 
+  std::signal(SIGINT, onSignal);
+  std::signal(SIGTERM, onSignal);
+
   spdlog::info("Running — press Ctrl-C to stop");
 
   warden::WardenApp app{sensor, led, buzzer, config};
-  app.run(g_stopSource.get_token());
+  app.run(appStop.get_token());
+
+  spdlog::info("Shutting down");
+  return EXIT_SUCCESS;
 }
