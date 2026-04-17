@@ -20,6 +20,14 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(spdlog)
 
+FetchContent_Declare(
+    tomlplusplus
+    GIT_REPOSITORY https://github.com/marzer/tomlplusplus.git
+    GIT_TAG        v3.4.0
+    FIND_PACKAGE_ARGS
+)
+FetchContent_MakeAvailable(tomlplusplus)
+
 include(CTest)
 
 if(BUILD_TESTING)
@@ -44,7 +52,7 @@ endif()
 file(GLOB_RECURSE CORE_SOURCES CONFIGURE_DEPENDS src/core/*.cpp)
 add_library(warden_core ${CORE_SOURCES})
 target_include_directories(warden_core PUBLIC include src/core)
-target_link_libraries(warden_core PUBLIC spdlog::spdlog)
+target_link_libraries(warden_core PUBLIC spdlog::spdlog tomlplusplus::tomlplusplus)
 
 # ── Main executable ──
 add_executable(main src/main.cpp)
