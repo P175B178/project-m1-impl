@@ -13,6 +13,28 @@
       }
     },
     {
+      "name": "pi-debug",
+      "displayName": "Pi Debug",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/pi-debug",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/raspberrypi-aarch64.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_TESTING": "OFF"
+      }
+    },
+    {
+      "name": "pi-release",
+      "displayName": "Pi Release",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/pi-release",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/raspberrypi-aarch64.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "BUILD_TESTING": "OFF"
+      }
+    },
+    {
       "name": "clang-tidy",
       "displayName": "Clang-Tidy",
       "generator": "Ninja",
@@ -27,6 +49,8 @@
   ],
   "buildPresets": [
     { "name": "debug",      "configurePreset": "debug" },
+    { "name": "pi-debug",   "configurePreset": "pi-debug" },
+    { "name": "pi-release", "configurePreset": "pi-release" },
     { "name": "clang-tidy", "configurePreset": "clang-tidy", "cleanFirst": true }
   ],
   "testPresets": [

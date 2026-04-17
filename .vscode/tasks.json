@@ -1,32 +1,49 @@
-   // VS Code tasks — run via Terminal > Run Task, or use shortcuts:
-//   Ctrl+Shift+B  → Build (default build task)
+// VS Code tasks — run via Terminal > Run Task, or use shortcuts:
+//   Ctrl+Shift+B  → Local: Build (default build task)
 {
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Build",
+      "label": "Local: Build",
       "type": "shell",
       "command": "cmake --preset debug && cmake --build --preset debug",
       "group": {
         "kind": "build",
         "isDefault": true
       },
-      "problemMatcher": "$gcc"
+      "problemMatcher": ["$gcc"]
     },
     {
-      "label": "Run",
+      "label": "Local: Run (sim)",
       "type": "shell",
       "command": "./build/debug/warden -c config/config.cfg",
-      "dependsOn": "Build",
+      "dependsOn": "Local: Build",
+      "dependsOrder": "sequence",
       "problemMatcher": []
     },
     {
-      "label": "Run tests",
+      "label": "Local: Run tests",
       "type": "shell",
       "command": "ctest --preset debug",
-      "dependsOn": "Build",
+      "dependsOn": "Local: Build",
       "problemMatcher": []
     },
+    // ── Pi ──
+    {
+      "label": "Pi: Build",
+      "type": "shell",
+      "command": "cmake --preset pi-debug && cmake --build --preset pi-debug",
+      "group": "build",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Pi: Build (Release)",
+      "type": "shell",
+      "command": "cmake --preset pi-release && cmake --build --preset pi-release",
+      "group": "build",
+      "problemMatcher": ["$gcc"]
+    },
+    // ── Utilities ──
     {
       "label": "Format all sources",
       "type": "shell",
@@ -37,7 +54,7 @@
       "label": "Workflow: Verify",
       "type": "shell",
       "command": "cmake --preset debug && cmake --build --preset debug --target format-check && cmake --workflow --preset tidy && cmake --build --preset debug && ctest --preset debug",
-      "problemMatcher": "$gcc"
+      "problemMatcher": ["$gcc"]
     },
     {
       "label": "Clean all build directories",
