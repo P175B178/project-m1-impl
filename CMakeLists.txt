@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+option(ENABLE_HARDWARE "Build hardware drivers (Raspberry Pi only)" OFF)
 option(ENABLE_CLANG_TIDY "Run clang-tidy on every translation unit during build" OFF)
 
 # ── Dependencies ──
@@ -65,12 +66,27 @@ target_include_directories(warden_core
 )
 target_link_libraries(warden_core PUBLIC spdlog::spdlog tomlplusplus::tomlplusplus)
 
+# ── Hardware / Simulation ──
+if(ENABLE_HARDWARE)
+    add_library(warden_hardware INTERFACE)
+    target_include_directories(warden_hardware INTERFACE src/hardware)
+    target_link_libraries(warden_hardware INTERFACE warden_core)
+else()
+    add_library(warden_sim INTERFACE)
+    target_include_directories(warden_sim INTERFACE src/sim)
+    target_compile_definitions(warden_sim INTERFACE HARDWARE_DISABLED)
+endif()
+
 # ── Main executable ──
 add_executable(warden src/main.cpp)
-target_include_directories(warden PRIVATE src)
+target_include_directories(warden PRIVATE src/core)
 # Inject project version so --version can report it without hardcoding.
 target_compile_definitions(warden PRIVATE WARDEN_VERSION="${PROJECT_VERSION}")
-target_link_libraries(warden PRIVATE warden_core CLI11::CLI11)
+if(ENABLE_HARDWARE)
+    target_link_libraries(warden PRIVATE warden_core warden_hardware CLI11::CLI11)
+else()
+    target_link_libraries(warden PRIVATE warden_core warden_sim CLI11::CLI11)
+endif()
 
 # ── Format target ──
 find_program(CLANG_FORMAT_EXE clang-format)
