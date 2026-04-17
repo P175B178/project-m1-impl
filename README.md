@@ -1,18 +1,24 @@
-# Warden — Environmental Monitor
+# Warden
 
-IoT environmental monitoring system for Raspberry Pi 5.
+Monitors temperature and humidity via a DHT22 sensor on a Raspberry Pi.
+Signals state (Normal / Warning / Alert) through the Pi's built-in LEDs and a buzzer.
+
+Built with C++23, cross-compiled inside a dev container, deployed over SSH.
 
 ---
 
 ## Project structure
 
 ```text
-include/hardware/  — public interfaces
-src/core/          — core logic
-src/sim/           — simulated hardware stubs (host only)
+include/hardware/  — public interfaces (no hardware deps)
+src/core/          — core logic (StateMachine, ConfigLoader, WardenApp)
+src/hardware/      — hardware drivers (Pi only, compiled with ENABLE_HARDWARE=ON)
+src/sim/           — simulated hardware stubs (host only, compiled with ENABLE_HARDWARE=OFF)
 tests/             — unit tests (run on host)
-tests/mocks/       — mock implementations for testing
+tests/mocks/       — mock implementations for testing without hardware
 config/config.cfg  — configuration file
+tools/pi/          — Pi helper scripts (SSH, deploy, run, debug)
+tools/pi/init/     — one-time Pi setup scripts (run in order)
 ```
 
 ---
