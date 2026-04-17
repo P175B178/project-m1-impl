@@ -18,6 +18,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(spdlog)
 
+# ── Core library (no hardware deps, testable on host) ──
+file(GLOB_RECURSE CORE_SOURCES CONFIGURE_DEPENDS src/core/*.cpp)
+add_library(warden_core ${CORE_SOURCES})
+target_include_directories(warden_core PUBLIC include src/core)
+target_link_libraries(warden_core PUBLIC spdlog::spdlog)
+
+# ── Main executable ──
 add_executable(main src/main.cpp)
-target_include_directories(main PRIVATE include src)
-target_link_libraries(main PRIVATE spdlog::spdlog)
+target_include_directories(main PRIVATE src)
+target_link_libraries(main PRIVATE warden_core)
