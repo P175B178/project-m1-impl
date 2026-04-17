@@ -31,7 +31,7 @@ cmake --preset debug && cmake --build --preset debug
 **VS Code task:** `Run`
 
 ```bash
-./build/debug/main
+./build/debug/main -c config/config.cfg
 ```
 
 **Debug:** Press `F5` — builds and launches under GDB.

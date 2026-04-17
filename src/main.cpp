@@ -6,6 +6,7 @@
 #include "sim/StubBuzzer.hpp"
 #include "sim/StubLed.hpp"
 
+#include <CLI/CLI.hpp>
 #include <spdlog/spdlog.h>
 
 #include <condition_variable>
@@ -13,6 +14,7 @@
 #include <cstdlib>
 #include <mutex>
 #include <stop_token>
+#include <string>
 
 namespace {
 std::stop_source g_stopSource; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
@@ -20,21 +22,41 @@ std::stop_source g_stopSource; // NOLINT(cppcoreguidelines-avoid-non-const-globa
 void handleSignal(int /*sig*/) {
   g_stopSource.request_stop();
 }
+
+struct CliArgs {
+  std::string configPath{"/etc/warden/config.cfg"};
+};
+
+CliArgs parseCli(int argc, char **argv) {
+  CliArgs args;
+
+  CLI::App app{"Warden — environmental monitor", "warden"};
+  app.set_version_flag("-v,--version", std::string{WARDEN_VERSION});
+  app.add_option("-c,--config", args.configPath, "Config file")->capture_default_str();
+
+  try {
+    app.parse(argc, argv);
+  } catch (const CLI::ParseError &err) {
+    std::exit(app.exit(err));
+  }
+  return args;
+}
 } // namespace
 
-int main() { // NOLINT(bugprone-exception-escape)
-  spdlog::info("Warden starting...");
+int main(int argc, char **argv) { // NOLINT(bugprone-exception-escape)
+  const auto args = parseCli(argc, argv);
 
   std::signal(SIGINT, handleSignal);
   std::signal(SIGTERM, handleSignal);
 
-  const auto configResult = ConfigLoader::load("config/config.cfg");
+  const auto configResult = ConfigLoader::load(args.configPath);
   if (!configResult) {
-    spdlog::error("Failed to load config: {}", configResult.error());
+    spdlog::error("Failed to load config '{}': {}", args.configPath, configResult.error());
     return EXIT_FAILURE;
   }
   const auto &config = *configResult;
 
+  spdlog::info("Warden {} starting — config: {}", WARDEN_VERSION, args.configPath);
   spdlog::info("Temp threshold: {:.1f} C, humidity threshold: {:.1f}%", config.temperatureThreshold,
                config.humidityThreshold);
   spdlog::info("Read interval: {}s, averaging window: {} samples", config.readInterval.count(), config.averagingWindow);
