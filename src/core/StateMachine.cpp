@@ -1,6 +1,7 @@
 #include "StateMachine.hpp"
 
-StateMachine::StateMachine(float temperatureThreshold, float humidityThreshold)
+StateMachine::StateMachine(float temperatureThreshold, // NOLINT(bugprone-easily-swappable-parameters)
+                           float humidityThreshold)
       : temperatureThreshold{temperatureThreshold}
       , humidityThreshold{humidityThreshold} {}
 

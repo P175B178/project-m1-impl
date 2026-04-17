@@ -1,0 +1,24 @@
+
+# cppcoreguidelines-avoid-magic-numbers: alias for readability-magic-numbers
+Checks: >
+  clang-diagnostic-*,
+  clang-analyzer-*,
+  cppcoreguidelines-*,
+  modernize-*,
+  readability-*,
+  performance-*,
+  bugprone-*,
+  -modernize-use-trailing-return-type,
+  -cppcoreguidelines-avoid-magic-numbers
+
+WarningsAsErrors: ""
+CheckOptions:
+  # Classes use UpperCamelCase:  StateMachine, AveragingBuffer
+  - key: readability-identifier-naming.ClassCase
+    value: CamelCase
+  # Functions and variables use lowerCamelCase:  currentState(), avgTemp
+  # Note: clang-tidy calls this 'camelBack', not 'camelCase'
+  - key: readability-identifier-naming.FunctionCase
+    value: camelBack
+  - key: readability-identifier-naming.VariableCase
+    value: camelBack

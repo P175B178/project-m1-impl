@@ -16,7 +16,8 @@ struct Sample {
 
 class StateMachine {
 public:
-  explicit StateMachine(float temperatureThreshold, float humidityThreshold);
+  explicit StateMachine(float temperatureThreshold, // NOLINT(bugprone-easily-swappable-parameters)
+                        float humidityThreshold);
 
   [[nodiscard]] std::optional<StateTransition> update(Sample sample);
   [[nodiscard]] State currentState() const noexcept { return state; }

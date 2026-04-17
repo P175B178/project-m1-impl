@@ -1,0 +1,13 @@
+InheritParentConfig: true
+
+# cppcoreguidelines-avoid-do-while:gtest EXPECT/ASSERT macros expand to do-while loops internally.
+# readability-function-cognitive-complexity: gtest TEST/TEST_F macro expansion inflates complexity scores artificially.
+# bugprone-unchecked-optional-access: ASSERT_TRUE(t.has_value()) guards subsequent t->field accesses, but tidy cannot see that ASSERT aborts the test on failure.
+# readability-magic-numbers: literal values in tests are expected values, not magic numbers.
+# readability-identifier-length: test code is scoped to a single method - short names are clear in context.
+Checks: >
+  -cppcoreguidelines-avoid-do-while,
+  -readability-function-cognitive-complexity,
+  -bugprone-unchecked-optional-access,
+  -readability-magic-numbers,
+  -readability-identifier-length

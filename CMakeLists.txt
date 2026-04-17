@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+option(ENABLE_CLANG_TIDY "Run clang-tidy on every translation unit during build" OFF)
+
 # ── Dependencies ──
 include(FetchContent)
 set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
@@ -28,6 +30,14 @@ if(BUILD_TESTING)
         FIND_PACKAGE_ARGS
     )
     FetchContent_MakeAvailable(googletest)
+endif()
+
+# ── clang-tidy (set after FetchContent so it only applies to project targets) ──
+if(ENABLE_CLANG_TIDY)
+    find_program(CLANG_TIDY_EXE clang-tidy REQUIRED)
+    set(CMAKE_CXX_CLANG_TIDY
+        ${CLANG_TIDY_EXE}
+        "--header-filter=^${CMAKE_SOURCE_DIR}/(include|src|tests)/")
 endif()
 
 # ── Core library (no hardware deps, testable on host) ──
