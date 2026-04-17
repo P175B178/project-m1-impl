@@ -52,7 +52,15 @@ ctest --preset debug
 
 ### Formatting
 
-Clang-format runs automatically on save (`Ctrl+S`) in VS Code.
+Clang-format runs automatically:
+- on save (`Ctrl+S`) in VS Code
+- on every commit via the git pre-commit hook
+
+The pre-commit hook lives in `.githooks/` and is configured automatically when the dev container starts. If you're working outside the container, run once after cloning:
+
+```bash
+git config core.hooksPath .githooks
+```
 
 To reformat all files manually:
 
