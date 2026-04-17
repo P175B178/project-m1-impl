@@ -14,8 +14,8 @@ public:
   [[nodiscard]] std::expected<Reading, SensorError> read() const override {
     Reading reading;
     reading.timestamp   = std::chrono::system_clock::now();
-    reading.temperature = 22.0F; // NOLINT(readability-magic-numbers)
-    reading.humidity    = 45.0F; // NOLINT(readability-magic-numbers)
+    reading.temperature = 30.0F; // NOLINT(readability-magic-numbers) — above default 28 C threshold
+    reading.humidity    = 75.0F; // NOLINT(readability-magic-numbers) — above default 70% threshold
     return reading;
   }
 };
