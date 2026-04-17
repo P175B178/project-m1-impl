@@ -1,5 +1,6 @@
 #include "core/AveragingBuffer.hpp"
 #include "core/StateMachine.hpp"
+#include "core/Transition.hpp"
 #include "sim/SimSensor.hpp"
 #include "sim/StubBuzzer.hpp"
 #include "sim/StubLed.hpp"
@@ -8,27 +9,7 @@
 
 #include <thread>
 
-void applyTransition(Led &led, Buzzer &buzzer, const StateTransition &t) {
-  switch (t.to) {
-  case State::Normal:
-    led.setMode(LedColor::Green, false);
-    break;
-  case State::Warning:
-    led.setMode(LedColor::Orange, false);
-    break;
-  case State::Alert:
-    led.setMode(LedColor::Red, true);
-    break;
-  }
-
-  if (t.to == State::Alert) {
-    buzzer.shortBeep(3);
-  } else if (t.from == State::Alert) {
-    buzzer.longBeep(1);
-  }
-}
-
-int main() {
+int main() { // NOLINT(bugprone-exception-escape)
   spdlog::info("Warden starting...");
 
   SimSensor sensor;
