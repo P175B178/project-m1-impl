@@ -1,3 +1,4 @@
+#include "core/AveragingBuffer.hpp"
 #include "core/StateMachine.hpp"
 #include "sim/SimSensor.hpp"
 #include "sim/StubBuzzer.hpp"
@@ -34,6 +35,8 @@ int main() {
     StubLed led;
     StubBuzzer buzzer;
     StateMachine sm(28.0f, 70.0f);
+    AveragingBuffer<float> tempBuffer(10);
+    AveragingBuffer<float> humBuffer(10);
 
     // Set initial LED state
     led.setMode(LedColor::Green, false);
@@ -47,11 +50,17 @@ int main() {
         }
 
         const auto& r = *result;
-        std::cout << "temp=" << r.temperature << " C, "
-                  << "humidity=" << r.humidity << " %"
+        tempBuffer.push(r.temperature);
+        humBuffer.push(r.humidity);
+
+        float avgTemp = *tempBuffer.average();
+        float avgHum = *humBuffer.average();
+
+        std::cout << "temp=" << avgTemp << " C (raw=" << r.temperature << "), "
+                  << "humidity=" << avgHum << " % (raw=" << r.humidity << ")"
                   << " [" << stateToString(sm.currentState()) << "]" << std::endl;
 
-        auto transition = sm.update({r.temperature, r.humidity});
+        auto transition = sm.update({avgTemp, avgHum});
         if (transition) {
             std::cout << "State: " << stateToString(transition->from)
                       << " -> " << stateToString(transition->to) << std::endl;
