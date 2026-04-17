@@ -1,4 +1,5 @@
 #include "core/AveragingBuffer.hpp"
+#include "core/ConfigLoader.hpp"
 #include "core/StateMachine.hpp"
 #include "core/Transition.hpp"
 #include "sim/SimSensor.hpp"
@@ -9,6 +10,7 @@
 
 #include <condition_variable>
 #include <csignal>
+#include <cstdlib>
 #include <mutex>
 #include <stop_token>
 
@@ -26,19 +28,25 @@ int main() { // NOLINT(bugprone-exception-escape)
   std::signal(SIGINT, handleSignal);
   std::signal(SIGTERM, handleSignal);
 
+  const auto configResult = ConfigLoader::load("config/config.cfg");
+  if (!configResult) {
+    spdlog::error("Failed to load config: {}", configResult.error());
+    return EXIT_FAILURE;
+  }
+  const auto &config = *configResult;
+
+  spdlog::info("Temp threshold: {:.1f} C, humidity threshold: {:.1f}%", config.temperatureThreshold,
+               config.humidityThreshold);
+  spdlog::info("Read interval: {}s, averaging window: {} samples", config.readInterval.count(), config.averagingWindow);
+  spdlog::info("Sensor validation: temp [{:.1f}, {:.1f}] C  hum [{:.1f}, {:.1f}]%", config.minTemperature,
+               config.maxTemperature, config.minHumidity, config.maxHumidity);
+
   SimSensor sensor;
   StubLed led;
   StubBuzzer buzzer;
-  StateMachine sm(28.0f, 70.0f);
-  AveragingBuffer<float> tempBuffer(10);
-  AveragingBuffer<float> humBuffer(10);
-
-  // NOLINTBEGIN(readability-magic-numbers)
-  constexpr float minTemperature = -40.0F;
-  constexpr float maxTemperature = 80.0F;
-  constexpr float minHumidity    = 0.0F;
-  constexpr float maxHumidity    = 100.0F;
-  // NOLINTEND(readability-magic-numbers)
+  StateMachine stateMachine(config.temperatureThreshold, config.humidityThreshold);
+  AveragingBuffer<float> tempBuffer(config.averagingWindow);
+  AveragingBuffer<float> humBuffer(config.averagingWindow);
 
   led.setMode(LedColor::Green, false);
 
@@ -51,10 +59,10 @@ int main() { // NOLINT(bugprone-exception-escape)
     if (!result) {
       spdlog::warn("Sensor read failed ({})", sensorErrorToString(result.error()));
     } else {
-      const auto &reading = *result;
-
-      if (reading.temperature < minTemperature || reading.temperature > maxTemperature ||
-          reading.humidity < minHumidity || reading.humidity > maxHumidity) {
+      const auto &reading     = *result;
+      bool        tempOutOfRange = reading.temperature < config.minTemperature || reading.temperature > config.maxTemperature;
+      bool        humOutOfRange  = reading.humidity < config.minHumidity || reading.humidity > config.maxHumidity;
+      if (tempOutOfRange || humOutOfRange) {
         spdlog::warn("Reading out of range (temp={:.1f}, hum={:.1f}) — skipping", reading.temperature,
                      reading.humidity);
       } else {
@@ -67,9 +75,9 @@ int main() { // NOLINT(bugprone-exception-escape)
         // NOLINTEND(bugprone-unchecked-optional-access)
 
         spdlog::info("temp={:.1f} C (raw={:.1f})  hum={:.1f}% (raw={:.1f})  state={}", avgTemp, reading.temperature,
-                     avgHum, reading.humidity, stateToString(sm.currentState()));
+                     avgHum, reading.humidity, stateToString(stateMachine.currentState()));
 
-        auto transition = sm.update({.temperature = avgTemp, .humidity = avgHum});
+        auto transition = stateMachine.update({.temperature = avgTemp, .humidity = avgHum});
         if (transition) {
           spdlog::info("State change: {} -> {}", stateToString(transition->from), stateToString(transition->to));
           applyTransition(led, buzzer, *transition);
@@ -78,7 +86,7 @@ int main() { // NOLINT(bugprone-exception-escape)
     }
 
     std::unique_lock<std::mutex> lock(cvMutex);
-    cv.wait_for(lock, stopToken, std::chrono::seconds(5), [&] { return stopToken.stop_requested(); });
+    cv.wait_for(lock, stopToken, config.readInterval, [&] { return stopToken.stop_requested(); });
   }
 
   spdlog::info("Shutting down...");
