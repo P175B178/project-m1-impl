@@ -7,25 +7,26 @@
 #include <cmath>
 #include <numbers>
 
-/// Simulated sensor that generates oscillating temperature and humidity.
-/// Temperature swings 16-32 C, humidity swings 35-75%.
-class SimSensor : public Sensor {
+/// Simulated sensor that produces a slowly oscillating sine-wave signal.
+/// Temperature crosses the default 28 C threshold, humidity crosses 70 %,
+/// so the full state-machine path is exercised without hardware.
+class SimSensor final : public Sensor {
 public:
   [[nodiscard]] std::expected<Reading, SensorError> read() const override {
     using namespace std::chrono;
-    const auto now                 = system_clock::now();
-    const duration<double> elapsed = now - start_;
+    const auto now       = system_clock::now();
+    const double elapsed = duration<double>(now.time_since_epoch()).count();
 
-    // Sine wave with ~6 minute period
-    const double phase = elapsed.count() * 2.0 * std::numbers::pi / 360.0;
+    // NOLINTBEGIN(readability-magic-numbers)
+    constexpr double cyclePeriodSeconds = 6.0 * 60.0;
 
-    Reading r;
-    r.temperature = 24.0f + 8.0f * static_cast<float>(std::sin(phase));
-    r.humidity    = 55.0f + 20.0f * static_cast<float>(std::sin(phase * 1.3));
-    r.timestamp   = now;
-    return r;
+    const double phase = elapsed / cyclePeriodSeconds * (2.0 * std::numbers::pi);
+
+    Reading reading;
+    reading.timestamp   = now;
+    reading.temperature = 24.0F + 8.0F * static_cast<float>(std::sin(phase));        // 16-32 C
+    reading.humidity    = 55.0F + 20.0F * static_cast<float>(std::sin(phase * 0.7)); // 35-75 %
+    // NOLINTEND(readability-magic-numbers)
+    return reading;
   }
-
-private:
-  std::chrono::system_clock::time_point start_ = std::chrono::system_clock::now();
 };

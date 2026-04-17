@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
     ninja-build \
     clang-format \
+    clang-tidy \
     # ── Debugging (gdb 16.3) ──
     gdb \
     # ── Version control ──

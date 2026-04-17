@@ -34,6 +34,12 @@
       "problemMatcher": []
     },
     {
+      "label": "Workflow: Verify",
+      "type": "shell",
+      "command": "cmake --preset debug && cmake --build --preset debug --target format-check && cmake --workflow --preset tidy && cmake --build --preset debug && ctest --preset debug",
+      "problemMatcher": "$gcc"
+    },
+    {
       "label": "Clean all build directories",
       "type": "shell",
       "command": "rm -rf build/",

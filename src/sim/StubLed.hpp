@@ -1,27 +1,30 @@
 #pragma once
 
 #include "hardware/Led.hpp"
+#include "hardware/LedColor.hpp"
 
 #include <iostream>
 
 /// Simulated LED — prints state changes to stdout.
-class StubLed : public Led {
+class StubLed final : public Led {
 public:
   void setMode(LedColor color, bool blink) override {
-    const char *name = "?";
-    switch (color) {
-    case LedColor::Green:
-      name = "GREEN";
-      break;
-    case LedColor::Orange:
-      name = "ORANGE";
-      break;
-    case LedColor::Red:
-      name = "RED";
-      break;
-    }
-    std::cout << "[LED] " << name << (blink ? " (blinking)" : "") << std::endl;
+    std::cout << "[LED] " << toString(color) << (blink ? " (blinking)" : "") << '\n';
   }
 
-  void setOff() override { std::cout << "[LED] OFF" << std::endl; }
+  void setOff() override { std::cout << "[LED] OFF\n"; }
+
+private:
+  static const char *toString(LedColor color) {
+    switch (color) {
+    case LedColor::Green:
+      return "GREEN";
+    case LedColor::Orange:
+      return "ORANGE";
+    case LedColor::Red:
+      return "RED";
+    default:
+      return "UNKNOWN";
+    }
+  }
 };

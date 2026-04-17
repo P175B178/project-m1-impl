@@ -10,12 +10,29 @@
         "CMAKE_BUILD_TYPE": "Debug",
         "BUILD_TESTING": "ON"
       }
+    },
+    {
+      "name": "clang-tidy",
+      "displayName": "Clang-Tidy",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/clang-tidy",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "ENABLE_CLANG_TIDY": "ON"
+      }
     }
   ],
   "buildPresets": [
     {
       "name": "debug",
       "configurePreset": "debug"
+    },
+    {
+      "name": "clang-tidy",
+      "configurePreset": "clang-tidy",
+      "cleanFirst": true
     }
   ],
   "testPresets": [
@@ -25,6 +42,16 @@
       "output": {
         "outputOnFailure": true
       }
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "tidy",
+      "displayName": "Tidy — static analysis",
+      "steps": [
+        { "type": "configure", "name": "clang-tidy" },
+        { "type": "build",     "name": "clang-tidy" }
+      ]
     }
   ]
 }

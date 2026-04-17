@@ -8,8 +8,8 @@
 #include <iostream>
 #include <thread>
 
-void applyTransition(Led &led, Buzzer &buzzer, const StateTransition &t) {
-  switch (t.to) {
+void applyTransition(Led &led, Buzzer &buzzer, const StateTransition &transition) {
+  switch (transition.to) {
   case State::Normal:
     led.setMode(LedColor::Green, false);
     break;
@@ -21,52 +21,54 @@ void applyTransition(Led &led, Buzzer &buzzer, const StateTransition &t) {
     break;
   }
 
-  if (t.to == State::Alert) {
-    buzzer.shortBeep(3);
-  } else if (t.from == State::Alert) {
-    buzzer.longBeep(1);
+  if (transition.to == State::Alert) {
+    buzzer.shortBeep(3U); // NOLINT(readability-magic-numbers)
+  } else if (transition.from == State::Alert) {
+    buzzer.longBeep(1U); // NOLINT(readability-magic-numbers)
   }
 }
 
-int main() {
+int main() { // NOLINT(bugprone-exception-escape)
   std::puts("Warden starting...");
 
   SimSensor sensor;
   StubLed led;
   StubBuzzer buzzer;
-  StateMachine sm(28.0f, 70.0f);
-  AveragingBuffer<float> tempBuffer(10);
-  AveragingBuffer<float> humBuffer(10);
+  StateMachine stateMachine(28.0F, 70.0F);               // NOLINT(readability-magic-numbers)
+  AveragingBuffer<float> tempBuffer(10);                 // NOLINT(readability-magic-numbers)
+  AveragingBuffer<float> humBuffer(10);                  // NOLINT(readability-magic-numbers)
+  constexpr auto readInterval = std::chrono::seconds(5); // NOLINT(readability-magic-numbers)
 
-  // Set initial LED state
   led.setMode(LedColor::Green, false);
 
   while (true) {
     auto result = sensor.read();
     if (!result) {
-      std::cout << "Sensor read failed" << std::endl;
-      std::this_thread::sleep_for(std::chrono::seconds(5));
+      std::cout << "Sensor read failed\n";
+      std::this_thread::sleep_for(readInterval);
       continue;
     }
 
-    const auto &r = *result;
-    tempBuffer.push(r.temperature);
-    humBuffer.push(r.humidity);
+    const auto &reading = *result;
+    tempBuffer.push(reading.temperature);
+    humBuffer.push(reading.humidity);
 
+    // NOLINTBEGIN(bugprone-unchecked-optional-access)
     float avgTemp = *tempBuffer.average();
     float avgHum  = *humBuffer.average();
+    // NOLINTEND(bugprone-unchecked-optional-access)
 
-    std::cout << "temp=" << avgTemp << " C (raw=" << r.temperature << "), "
-              << "humidity=" << avgHum << " % (raw=" << r.humidity << ")"
-              << " [" << stateToString(sm.currentState()) << "]" << std::endl;
+    std::cout << "temp=" << avgTemp << " C (raw=" << reading.temperature << "), "
+              << "humidity=" << avgHum << " % (raw=" << reading.humidity << ")"
+              << " [" << stateToString(stateMachine.currentState()) << "]\n";
 
-    auto transition = sm.update({avgTemp, avgHum});
+    auto transition = stateMachine.update({.temperature = avgTemp, .humidity = avgHum});
     if (transition) {
-      std::cout << "State: " << stateToString(transition->from) << " -> " << stateToString(transition->to) << std::endl;
+      std::cout << "State: " << stateToString(transition->from) << " -> " << stateToString(transition->to) << '\n';
       applyTransition(led, buzzer, *transition);
     }
 
-    std::this_thread::sleep_for(std::chrono::seconds(5));
+    std::this_thread::sleep_for(readInterval);
   }
 
   return 0;

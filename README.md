@@ -13,6 +13,9 @@ The project uses a **VS Code dev container**. Nothing needs to be installed on t
 
 Open the project in VS Code, then click **Reopen in Container** (or `Ctrl+Shift+P` → **Dev Containers: Reopen in Container**).
 
+> [!TIP]
+> Throughout this guide, VS Code tasks are run via `Ctrl+Shift+P` → **Tasks: Run Task**.
+
 ---
 
 ## Build and run
@@ -57,6 +60,16 @@ To reformat all files manually:
 
 ```bash
 cmake --preset debug && cmake --build --preset debug --target format
+```
+
+### Verify before committing
+
+Builds, formats, runs static analysis (clang-tidy), and tests:
+
+**VS Code task:** `Workflow: Verify`
+
+```bash
+cmake --preset debug && cmake --build --preset debug --target format && cmake --workflow --preset tidy && cmake --build --preset debug && ctest --preset debug
 ```
 
 ### Clean build directories
