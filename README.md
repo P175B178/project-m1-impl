@@ -45,7 +45,23 @@ ctest --preset debug
 
 ---
 
-**Clean build directories:**
+## Utilities
+
+### Formatting
+
+Clang-format runs automatically on save (`Ctrl+S`) in VS Code.
+
+To reformat all files manually:
+
+**VS Code task:** `Format all sources`
+
+```bash
+cmake --preset debug && cmake --build --preset debug --target format
+```
+
+### Clean build directories
+
+Useful when builds get into a broken state:
 
 **VS Code task:** `Clean all build directories`
 

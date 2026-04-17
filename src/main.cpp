@@ -8,67 +8,66 @@
 #include <iostream>
 #include <thread>
 
-void applyTransition(Led& led, Buzzer& buzzer, const StateTransition& t) {
-    switch (t.to) {
-    case State::Normal:
-        led.setMode(LedColor::Green, false);
-        break;
-    case State::Warning:
-        led.setMode(LedColor::Orange, false);
-        break;
-    case State::Alert:
-        led.setMode(LedColor::Red, true);
-        break;
-    }
+void applyTransition(Led &led, Buzzer &buzzer, const StateTransition &t) {
+  switch (t.to) {
+  case State::Normal:
+    led.setMode(LedColor::Green, false);
+    break;
+  case State::Warning:
+    led.setMode(LedColor::Orange, false);
+    break;
+  case State::Alert:
+    led.setMode(LedColor::Red, true);
+    break;
+  }
 
-    if (t.to == State::Alert) {
-        buzzer.shortBeep(3);
-    } else if (t.from == State::Alert) {
-        buzzer.longBeep(1);
-    }
+  if (t.to == State::Alert) {
+    buzzer.shortBeep(3);
+  } else if (t.from == State::Alert) {
+    buzzer.longBeep(1);
+  }
 }
 
 int main() {
-    std::puts("Warden starting...");
+  std::puts("Warden starting...");
 
-    SimSensor sensor;
-    StubLed led;
-    StubBuzzer buzzer;
-    StateMachine sm(28.0f, 70.0f);
-    AveragingBuffer<float> tempBuffer(10);
-    AveragingBuffer<float> humBuffer(10);
+  SimSensor sensor;
+  StubLed led;
+  StubBuzzer buzzer;
+  StateMachine sm(28.0f, 70.0f);
+  AveragingBuffer<float> tempBuffer(10);
+  AveragingBuffer<float> humBuffer(10);
 
-    // Set initial LED state
-    led.setMode(LedColor::Green, false);
+  // Set initial LED state
+  led.setMode(LedColor::Green, false);
 
-    while (true) {
-        auto result = sensor.read();
-        if (!result) {
-            std::cout << "Sensor read failed" << std::endl;
-            std::this_thread::sleep_for(std::chrono::seconds(5));
-            continue;
-        }
-
-        const auto& r = *result;
-        tempBuffer.push(r.temperature);
-        humBuffer.push(r.humidity);
-
-        float avgTemp = *tempBuffer.average();
-        float avgHum = *humBuffer.average();
-
-        std::cout << "temp=" << avgTemp << " C (raw=" << r.temperature << "), "
-                  << "humidity=" << avgHum << " % (raw=" << r.humidity << ")"
-                  << " [" << stateToString(sm.currentState()) << "]" << std::endl;
-
-        auto transition = sm.update({avgTemp, avgHum});
-        if (transition) {
-            std::cout << "State: " << stateToString(transition->from)
-                      << " -> " << stateToString(transition->to) << std::endl;
-            applyTransition(led, buzzer, *transition);
-        }
-
-        std::this_thread::sleep_for(std::chrono::seconds(5));
+  while (true) {
+    auto result = sensor.read();
+    if (!result) {
+      std::cout << "Sensor read failed" << std::endl;
+      std::this_thread::sleep_for(std::chrono::seconds(5));
+      continue;
     }
 
-    return 0;
+    const auto &r = *result;
+    tempBuffer.push(r.temperature);
+    humBuffer.push(r.humidity);
+
+    float avgTemp = *tempBuffer.average();
+    float avgHum  = *humBuffer.average();
+
+    std::cout << "temp=" << avgTemp << " C (raw=" << r.temperature << "), "
+              << "humidity=" << avgHum << " % (raw=" << r.humidity << ")"
+              << " [" << stateToString(sm.currentState()) << "]" << std::endl;
+
+    auto transition = sm.update({avgTemp, avgHum});
+    if (transition) {
+      std::cout << "State: " << stateToString(transition->from) << " -> " << stateToString(transition->to) << std::endl;
+      applyTransition(led, buzzer, *transition);
+    }
+
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+  }
+
+  return 0;
 }

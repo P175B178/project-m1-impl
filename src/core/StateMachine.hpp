@@ -5,26 +5,26 @@
 #include <optional>
 
 struct StateTransition {
-    State from;
-    State to;
+  State from;
+  State to;
 };
 
 struct Sample {
-    float temperature{};
-    float humidity{};
+  float temperature{};
+  float humidity{};
 };
 
 class StateMachine {
 public:
-    explicit StateMachine(float temperatureThreshold, float humidityThreshold);
+  explicit StateMachine(float temperatureThreshold, float humidityThreshold);
 
-    [[nodiscard]] std::optional<StateTransition> update(Sample sample);
-    [[nodiscard]] State currentState() const noexcept { return state; }
+  [[nodiscard]] std::optional<StateTransition> update(Sample sample);
+  [[nodiscard]] State currentState() const noexcept { return state; }
 
 private:
-    [[nodiscard]] State evaluate(Sample sample) const noexcept;
+  [[nodiscard]] State evaluate(Sample sample) const noexcept;
 
-    float temperatureThreshold;
-    float humidityThreshold;
-    State state{State::Normal};
+  float temperatureThreshold;
+  float humidityThreshold;
+  State state{State::Normal};
 };

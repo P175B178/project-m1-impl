@@ -1,0 +1,10 @@
+BasedOnStyle: LLVM
+ColumnLimit: 120
+BinPackParameters: false
+InsertBraces: true
+BreakConstructorInitializers: BeforeComma
+ConstructorInitializerIndentWidth: 6
+AlignConsecutiveAssignments:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: true
