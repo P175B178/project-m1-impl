@@ -92,7 +92,7 @@ PI_PASSWORD=<your Pi password>
 tools/pi/init/01-setup-ssh.sh
 ```
 
-**3. Bootstrap the Pi** — installs runtime dependencies and configures LED permissions. Safe to run multiple times.
+**3. Bootstrap the Pi** — installs runtime dependencies, configures LED permissions, and enables the DHT22 kernel driver. Safe to run multiple times.
 
 **VS Code task:** `Pi init: 2. Bootstrap`
 
@@ -109,11 +109,24 @@ sudo udevadm control --reload-rules
 sudo udevadm trigger --subsystem-match=leds --action=change
 ```
 
-Verify on the Pi by writing directly:
+Verify on the Pi:
 
 ```bash
 echo 1 > /sys/class/leds/PWR/brightness   # red LED on
 echo 0 > /sys/class/leds/PWR/brightness   # red LED off
+```
+
+Bootstrap also enables the DHT22 kernel driver. If the overlay was not already present, it will ask you to reboot the Pi. To do it manually, SSH into the Pi (`Pi: SSH` task or `tools/pi/connect.sh`) and run:
+
+```bash
+echo "dtoverlay=dht11,gpiopin=4" | sudo tee -a /boot/firmware/config.txt
+sudo reboot
+```
+
+After rebooting, verify on the Pi that the sensor is visible:
+
+```bash
+cat /sys/bus/iio/devices/iio:device0/in_temp_input
 ```
 
 ### Build for Pi
