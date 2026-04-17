@@ -4,8 +4,10 @@
 #include <CLI/CLI.hpp>
 #include <spdlog/spdlog.h>
 
+#include <csignal>
 #include <cstdio>
 #include <cstdlib>
+#include <stop_token>
 #include <string>
 
 #ifdef HARDWARE_DISABLED
@@ -17,6 +19,12 @@
 #include "hardware/led/StatusLed.hpp"
 #include "hardware/sensor/Dht22Sensor.hpp"
 #endif
+
+// ── Signal handling ──────────────────────────────────────────────────────────
+namespace {
+std::stop_source appStop; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+void onSignal(int /*signal*/) { appStop.request_stop(); }
+} // namespace
 
 // ── CLI ──────────────────────────────────────────────────────────────────────
 struct CliArgs {
@@ -76,8 +84,14 @@ int main(int argc, char **argv) { // NOLINT(bugprone-exception-escape)
   warden::hardware::GpioBuzzer buzzer;
 #endif
 
+  std::signal(SIGINT, onSignal);
+  std::signal(SIGTERM, onSignal);
+
   spdlog::info("Running — press Ctrl-C to stop");
 
   warden::WardenApp app{sensor, led, buzzer, config};
-  app.run();
+  app.run(appStop.get_token());
+
+  spdlog::info("Shutting down");
+  return EXIT_SUCCESS;
 }

@@ -7,6 +7,8 @@
 #include "hardware/Led.hpp"
 #include "hardware/Sensor.hpp"
 
+#include <stop_token>
+
 namespace warden {
 
 /// Owns the monitoring loop: reads the sensor, maintains averaging buffers,
@@ -24,8 +26,8 @@ public:
   WardenApp(WardenApp &&)                 = delete;
   WardenApp &operator=(WardenApp &&)      = delete;
 
-  /// Run the monitoring loop. Does not return.
-  [[noreturn]] void run();
+  /// Run the monitoring loop until the stop token is signalled.
+  void run(std::stop_token stopToken);
 
 private:
   Sensor &sensor;
