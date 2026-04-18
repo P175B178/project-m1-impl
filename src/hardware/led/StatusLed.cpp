@@ -1,12 +1,22 @@
 #include "StatusLed.hpp"
 
+#include <chrono>
+#include <condition_variable>
+#include <mutex>
 #include <spdlog/spdlog.h>
+
+using namespace std::chrono_literals;
+
+namespace {
+constexpr auto blinkPeriod = 1000ms;
+}
 
 namespace warden::hardware {
 
 StatusLed::StatusLed() = default;
 
 StatusLed::~StatusLed() {
+  stopBlinking();
   clearColor();
 }
 
@@ -33,12 +43,56 @@ void StatusLed::applyColor(warden::LedColor color) {
 }
 
 void StatusLed::setMode(warden::LedColor color, bool blink) {
-  spdlog::debug("StatusLed: setMode color={} blink={} (blinking not yet implemented)", static_cast<int>(color), blink);
-  applyColor(color);
+  // Stop any running blink thread before touching the pins to avoid
+  // a race between the thread and the new color assignment.
+  spdlog::debug("StatusLed: setMode color={} blink={}", static_cast<int>(color), blink);
+  stopBlinking();
+  if (blink) {
+    startBlinking(color);
+  } else {
+    applyColor(color);
+  }
 }
 
 void StatusLed::setOff() {
+  stopBlinking();
   clearColor();
+}
+
+void StatusLed::startBlinking(warden::LedColor color) {
+  blinkThread = std::jthread{[this, color](std::stop_token stop) {
+    std::mutex sleepMutex;
+    std::condition_variable_any sleepCv;
+
+    bool on = true;
+
+    spdlog::debug("blink thread started");
+    while (!stop.stop_requested()) {
+      spdlog::debug("blink: {}", on ? "on" : "off");
+
+      if (on) {
+        applyColor(color);
+      } else {
+        clearColor();
+      }
+
+      std::unique_lock lock{sleepMutex};
+      sleepCv.wait_for(lock, stop, blinkPeriod / 2, [] { return false; });
+
+      on = !on;
+    }
+
+    clearColor();
+    spdlog::debug("blink thread stopped");
+  }};
+}
+
+void StatusLed::stopBlinking() {
+  if (blinkThread.joinable()) {
+    spdlog::debug("StatusLed: stopping blink thread");
+    blinkThread.request_stop();
+    blinkThread.join();
+  }
 }
 
 } // namespace warden::hardware

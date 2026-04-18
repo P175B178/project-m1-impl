@@ -3,6 +3,8 @@
 #include "SysfsLed.hpp"
 #include "hardware/Led.hpp"
 
+#include <thread>
+
 namespace warden::hardware {
 
 /// Status LED driver composing the Pi's built-in ACT (green) and PWR (red)
@@ -13,8 +15,8 @@ namespace warden::hardware {
 ///   Orange -> ACT on,  PWR on
 ///   Red    -> ACT off, PWR on
 ///
-/// Blinking not yet implemented — blink requests are shown as solid colour.
-class StatusLed : public warden::Led {
+/// When blink=true, a background std::jthread toggles all active pins at 1 Hz.
+class StatusLed final : public warden::Led {
 public:
   StatusLed();
   ~StatusLed() override;
@@ -30,9 +32,12 @@ public:
 private:
   void applyColor(warden::LedColor color);
   void clearColor();
+  void startBlinking(warden::LedColor color);
+  void stopBlinking();
 
   SysfsLed act{"ACT", /*inverted=*/true};  // green
   SysfsLed pwr{"PWR", /*inverted=*/false}; // red
+  std::jthread blinkThread;
 };
 
 } // namespace warden::hardware
