@@ -30,7 +30,16 @@ jobs:
       - name: Install system dependencies
         run: |
           apt-get update && apt-get install -y --no-install-recommends \
-            build-essential cmake ninja-build git ca-certificates
+            build-essential cmake ninja-build git ca-certificates \
+            clang-format
+
+      - name: Check formatting
+        run: |
+          cmake -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DBUILD_TESTING=ON \
+            -DFETCHCONTENT_BASE_DIR=/root/.cmake/fetchcontent
+          cmake --build build --target format-check
 
       - name: Build
         run: |

@@ -28,6 +28,12 @@
       "problemMatcher": []
     },
     {
+      "label": "Format all sources",
+      "type": "shell",
+      "command": "cmake --preset debug && cmake --build --preset debug --target format",
+      "problemMatcher": []
+    },
+    {
       "label": "Clean all build directories",
       "type": "shell",
       "command": "rm -rf build/",
