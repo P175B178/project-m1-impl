@@ -1,6 +1,8 @@
 #include "GpioBuzzer.hpp"
 
 #include <chrono>
+#include <condition_variable>
+#include <mutex>
 #include <thread>
 
 #include <spdlog/spdlog.h>
@@ -18,6 +20,7 @@ constexpr unsigned int gpioPin = 17;
 
 // Beep timing constants.
 constexpr auto shortBeepDuration = 100ms;
+constexpr auto shortBeepPause    = 100ms;
 constexpr auto longBeepDuration  = 500ms;
 } // namespace
 
@@ -27,27 +30,52 @@ GpioBuzzer::GpioBuzzer(const std::string &chipPath)
       : pin{chipPath, gpioPin, "buzzer"} {}
 
 GpioBuzzer::~GpioBuzzer() {
+  stopBeeping();
   pin.setLow();
 }
 
 void GpioBuzzer::setOff() {
   spdlog::debug("GpioBuzzer: setOff");
+  stopBeeping();
   pin.setLow();
 }
 
 void GpioBuzzer::shortBeep(unsigned int count) {
-  spdlog::debug("GpioBuzzer: {} short beep(s) (sequences not yet implemented — emitting one)", count);
-  emitTone(shortBeepDuration);
+  spdlog::debug("GpioBuzzer: {} short beep(s)", count);
+  startBeeping(shortBeepDuration, count);
 }
 
 void GpioBuzzer::longBeep(unsigned int count) {
-  spdlog::debug("GpioBuzzer: {} long beep(s) (sequences not yet implemented — emitting one)", count);
-  emitTone(longBeepDuration);
+  spdlog::debug("GpioBuzzer: {} long beep(s)", count);
+  startBeeping(longBeepDuration, count);
 }
 
-void GpioBuzzer::emitTone(std::chrono::milliseconds duration) {
+void GpioBuzzer::startBeeping(std::chrono::milliseconds duration, unsigned int count) {
+  stopBeeping();
+  beepThread = std::jthread{[this, duration, count](std::stop_token stop) {
+    std::mutex sleepMutex;
+    std::condition_variable_any sleepCv;
+
+    for (unsigned int idx = 0; idx < count && !stop.stop_requested(); ++idx) {
+      emitTone(duration, stop);
+      if (idx + 1 < count && !stop.stop_requested()) {
+        std::unique_lock lock{sleepMutex};
+        sleepCv.wait_for(lock, stop, shortBeepPause, [] { return false; });
+      }
+    }
+  }};
+}
+
+void GpioBuzzer::stopBeeping() {
+  if (beepThread.joinable()) {
+    beepThread.request_stop();
+    beepThread.join();
+  }
+}
+
+void GpioBuzzer::emitTone(std::chrono::milliseconds duration, std::stop_token stop) {
   const auto end = std::chrono::steady_clock::now() + duration;
-  while (std::chrono::steady_clock::now() < end) {
+  while (!stop.stop_requested() && std::chrono::steady_clock::now() < end) {
     pin.setHigh();
     std::this_thread::sleep_for(tonePeriod / 2);
     pin.setLow();
