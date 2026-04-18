@@ -31,6 +31,18 @@ sudo apt-get install -y --no-install-recommends \
 echo "==> Creating app directory"
 mkdir -p "$HOME/apps/warden/config"
 
+echo "==> Configuring LED permissions"
+UDEV_RULE='SUBSYSTEM=="leds", RUN+="/bin/chgrp video /sys%p/brightness /sys%p/trigger", RUN+="/bin/chmod g+w /sys%p/brightness /sys%p/trigger"'
+UDEV_FILE=/etc/udev/rules.d/99-warden-leds.rules
+if grep -qxF "$UDEV_RULE" "$UDEV_FILE" 2>/dev/null; then
+  echo "    Already configured — skipping"
+else
+  echo "$UDEV_RULE" | sudo tee "$UDEV_FILE" > /dev/null
+  sudo udevadm control --reload-rules
+  sudo udevadm trigger --subsystem-match=leds --action=change
+  echo "    Done."
+fi
+
 echo "==> Done"
 uname -m
 EOF

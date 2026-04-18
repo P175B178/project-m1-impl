@@ -92,12 +92,28 @@ PI_PASSWORD=<your Pi password>
 tools/pi/init/01-setup-ssh.sh
 ```
 
-**3. Install runtime dependencies on the Pi:**
+**3. Bootstrap the Pi** — installs runtime dependencies and configures LED permissions. Safe to run multiple times.
 
 **VS Code task:** `Pi init: 2. Bootstrap`
 
 ```bash
 tools/pi/init/02-bootstrap.sh
+```
+
+Bootstrap configures a udev rule so your user can write to `/sys/class/leds/` without sudo. To do it manually, SSH into the Pi (`Pi: SSH` task or `tools/pi/connect.sh`) and run:
+
+```bash
+echo 'SUBSYSTEM=="leds", RUN+="/bin/chgrp video /sys%p/brightness /sys%p/trigger", RUN+="/bin/chmod g+w /sys%p/brightness /sys%p/trigger"' \
+  | sudo tee /etc/udev/rules.d/99-warden-leds.rules
+sudo udevadm control --reload-rules
+sudo udevadm trigger --subsystem-match=leds --action=change
+```
+
+Verify on the Pi by writing directly:
+
+```bash
+echo 1 > /sys/class/leds/PWR/brightness   # red LED on
+echo 0 > /sys/class/leds/PWR/brightness   # red LED off
 ```
 
 ### Build for Pi
