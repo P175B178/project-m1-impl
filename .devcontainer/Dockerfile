@@ -3,7 +3,8 @@ FROM debian:13-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN dpkg --add-architecture arm64 \
+ && apt-get update && apt-get install -y --no-install-recommends \
     bash \
     # ── Compilers and build tools (Trixie: gcc/g++ 14.2, clang 19.1) ──
     build-essential \
@@ -14,9 +15,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ninja-build \
     clang-format \
     clang-tidy \
+    # ── Hardware libraries ──
+    libgpiod-dev \
     # ── Cross-compilation (Raspberry Pi 5 / aarch64) ──
     gcc-aarch64-linux-gnu \
     g++-aarch64-linux-gnu \
+    libgpiod-dev:arm64 \
     # ── Debugging (gdb 16.3) ──
     gdb \
     gdb-multiarch \

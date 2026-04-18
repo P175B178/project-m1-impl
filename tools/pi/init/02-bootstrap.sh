@@ -26,6 +26,8 @@ sudo apt-get install -y --no-install-recommends \
   ca-certificates \
   rsync \
   gdbserver \
+  libgpiod3 \
+  gpiod \
   htop
 
 echo "==> Creating app directory"

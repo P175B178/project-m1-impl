@@ -68,10 +68,13 @@ target_link_libraries(warden_core PUBLIC spdlog::spdlog tomlplusplus::tomlpluspl
 
 # ── Hardware / Simulation ──
 if(ENABLE_HARDWARE)
+    find_library(GPIOD_LIB gpiod REQUIRED)
+    find_path(GPIOD_INCLUDE gpiod.h REQUIRED)
+
     file(GLOB_RECURSE HARDWARE_SOURCES CONFIGURE_DEPENDS src/hardware/*.cpp)
     add_library(warden_hardware ${HARDWARE_SOURCES})
-    target_include_directories(warden_hardware PUBLIC src/hardware)
-    target_link_libraries(warden_hardware      PUBLIC warden_core)
+    target_include_directories(warden_hardware PUBLIC src/hardware ${GPIOD_INCLUDE})
+    target_link_libraries(warden_hardware      PUBLIC warden_core ${GPIOD_LIB})
 else()
     add_library(warden_sim INTERFACE)
     target_include_directories(warden_sim INTERFACE src/sim)
